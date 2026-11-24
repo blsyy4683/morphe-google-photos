@@ -645,7 +645,7 @@ public final class SessionLogManager {
 
         StringBuilder sb = new StringBuilder(headerSb);
         if (maxLines > 0 && matchedLines.size() > maxLines) {
-            sb.append("\n[... Displaying latest ").append(maxLines).append(" of ").append(matchedLines.size()).append(" matching lines. Export file for complete history ...]\n\n");
+            sb.append("\n[... Displaying latest ").append(maxLines).append(" 页，共 ").append(matchedLines.size()).append(" matching lines. Export file for complete history ...]\n\n");
             int startIndex = matchedLines.size() - maxLines;
             for (int i = startIndex; i < matchedLines.size(); i++) {
                 sb.append(matchedLines.get(i)).append("\n");
@@ -676,7 +676,7 @@ public final class SessionLogManager {
         } else if (q != null) {
             return "\"" + q + "\"";
         } else {
-            return "All";
+            return "全选";
         }
     }
 
@@ -770,7 +770,7 @@ public final class SessionLogManager {
             return resultUri;
         } catch (Throwable t) {
             Log.e(TAG, "Failed exporting session to file", t);
-            MAIN_HANDLER.post(() -> Toast.makeText(context, "Export failed: " + t.getMessage(), Toast.LENGTH_SHORT).show());
+            MAIN_HANDLER.post(() -> Toast.makeText(context, "导出失败：" + t.getMessage(), Toast.LENGTH_SHORT).show());
             return null;
         }
     }
@@ -800,7 +800,7 @@ public final class SessionLogManager {
                         }
                         activity.startActivity(Intent.createChooser(sendIntent, "Share Diagnostics Log"));
                     } catch (Throwable t) {
-                        Toast.makeText(activity, "Failed to share: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "分享失败：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (Throwable t) {
@@ -831,7 +831,7 @@ public final class SessionLogManager {
                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                     }
                 } catch (Throwable t) {
-                    Toast.makeText(context, "Failed to copy: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "复制失败：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });

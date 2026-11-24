@@ -81,9 +81,9 @@ public final class DeviceSpoofHelper {
                         if (PROFILE_AUTO.equalsIgnoreCase(getSelectedProfile())) {
                             new Handler(Looper.getMainLooper()).post(() -> {
                                 try {
-                                    String profileName = newPolicy == 1 ? "Pixel 5 (Storage Saver)" : "Pixel XL (Original Quality)";
+                                    String profileName = newPolicy == 1 ? "Pixel 5（存储空间节省模式）" : "Pixel XL（原画质）";
                                     Toast.makeText(appContext,
-                                            "Backup quality changed! Applying " + profileName + " unmetered backup...",
+                                            "备份画质已变化！正在为 " + profileName + " 应用不计流量备份…",
                                             Toast.LENGTH_SHORT).show();
                                 } catch (Throwable ignored) {}
                             });
@@ -209,15 +209,15 @@ public final class DeviceSpoofHelper {
     public static String getProfileDisplayName() {
         String selected = getSelectedProfile();
         if (PROFILE_ORIGINAL.equalsIgnoreCase(selected)) {
-            return "Original Device (Disabled)";
+            return "原设备（已关闭伪装）";
         }
         String effective = getEffectiveProfile();
         String effectiveDesc = PROFILE_PIXEL_5.equalsIgnoreCase(effective)
-                ? "Storage Saver • Pixel 5"
-                : "Original Quality • Pixel XL";
+                ? "存储空间节省模式 • Pixel 5"
+                : "原画质 • Pixel XL";
 
         if (PROFILE_AUTO.equalsIgnoreCase(selected)) {
-            return "Auto (" + effectiveDesc + ")";
+            return "自动（" + effectiveDesc + "）";
         }
         return effectiveDesc;
     }
@@ -225,12 +225,12 @@ public final class DeviceSpoofHelper {
     public static String getProfileChipName() {
         String selected = getSelectedProfile();
         if (PROFILE_ORIGINAL.equalsIgnoreCase(selected)) {
-            return "Original Device";
+            return "原设备";
         }
         if (PROFILE_AUTO.equalsIgnoreCase(selected)) {
-            return "Auto (" + (isStorageSaver() ? "Storage Saver" : "Original Quality") + ")";
+            return "自动（" + (isStorageSaver() ? "存储空间节省模式" : "原画质") + "）";
         }
-        return isStorageSaver() ? "Storage Saver" : "Original Quality";
+        return isStorageSaver() ? "存储空间节省模式" : "原画质";
     }
 
     public static String getModel() {
@@ -398,9 +398,9 @@ public final class DeviceSpoofHelper {
         }
         java.util.List<String> list = new java.util.ArrayList<>(originalDescriptions);
         if (qualityType == 0) {
-            list.add("• Morphe: Google Pixel XL configuration (Unlimited storage)");
+            list.add("• Morphe：Google Pixel XL 配置（无限存储）");
         } else if (qualityType == 1) {
-            list.add("• Morphe: Google Pixel 5 configuration (Unlimited storage)");
+            list.add("• Morphe：Google Pixel 5 配置（无限存储）");
         }
         return list;
     }

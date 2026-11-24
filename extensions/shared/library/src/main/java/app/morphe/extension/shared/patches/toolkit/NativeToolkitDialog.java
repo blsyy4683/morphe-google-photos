@@ -139,12 +139,12 @@ public class NativeToolkitDialog {
     private static Runnable sRepopulateAlbumCardsRunnable = null;
     private static volatile boolean sLockedFolderAuthenticated = false;
     public enum SortOrder {
-        DATE_DESC("Date (Newest first)", "Newest"),
-        DATE_ASC("Date (Oldest first)", "Oldest"),
-        SIZE_DESC("File Size (Largest first)", "Largest"),
-        SIZE_ASC("File Size (Smallest first)", "Smallest"),
-        QUOTA_DESC("Cloud Quota Impact", "Quota"),
-        NAME_ASC("File Name (A → Z)", "Name");
+        DATE_DESC("日期（最新在前）", "最新"),
+        DATE_ASC("日期（最早在前）", "最早"),
+        SIZE_DESC("文件大小（最大在前）", "最大"),
+        SIZE_ASC("文件大小（最小在前）", "最小"),
+        QUOTA_DESC("云端配额影响", "配额"),
+        NAME_ASC("文件名（A → Z）", "名称");
 
         public final String fullLabel;
         public final String shortLabel;
@@ -166,7 +166,7 @@ public class NativeToolkitDialog {
                 showDialogInternal(activity);
             } catch (Throwable t) {
                 Logger.printException(() -> "Error showing NativeToolkitDialog", t);
-                Toast.makeText(activity, "Error opening Toolkit: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "打开工具箱出错：" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -234,7 +234,7 @@ public class NativeToolkitDialog {
         titleCol.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Google Photos Toolkit");
+        tvTitle.setText("Google 相册工具箱");
         tvTitle.setTextSize(17.5f);
         tvTitle.setTextColor(theme.textPrimary);
         tvTitle.setTypeface(null, Typeface.BOLD);
@@ -257,8 +257,8 @@ public class NativeToolkitDialog {
         });
 
         TextView tvSub = new TextView(activity);
-        String accLabel = currentAccount != null ? currentAccount.accountName : "No Account";
-        tvSub.setText(accLabel + " (Active Account)");
+        String accLabel = currentAccount != null ? currentAccount.accountName : "未登录账号";
+        tvSub.setText(accLabel + "（当前账号）");
         tvSub.setTextSize(11.5f);
         tvSub.setTextColor(theme.textSecondary);
         titleCol.addView(tvSub);
@@ -306,8 +306,8 @@ public class NativeToolkitDialog {
         runScanRef[0] = () -> {
             final int scanSeq = sScanSequence.incrementAndGet();
             MAIN_HANDLER.post(() -> {
-                tvResultsStatus.setText("Scanning media matching filters...");
-                tvScanButtonLabel.setText("Scanning...");
+                tvResultsStatus.setText("正在扫描符合筛选条件的媒体…");
+                tvScanButtonLabel.setText("正在扫描…");
                 if (sProgressBar != null) sProgressBar.setVisibility(View.VISIBLE);
             });
             THREAD_POOL.execute(() -> {
@@ -337,7 +337,7 @@ public class NativeToolkitDialog {
 
                         MAIN_HANDLER.post(() -> {
                             if (scanSeq == sScanSequence.get()) {
-                                tvResultsStatus.setText("Clustering visual similarity (checking top " + maxCandidates + " items)...");
+                                tvResultsStatus.setText("正在聚类视觉相似项（检查前 " + maxCandidates + " 项）…");
                             }
                         });
 
@@ -405,7 +405,7 @@ public class NativeToolkitDialog {
                         selectedMediaKeys.clear();
                         selectedMediaKeys.addAll(newSelectedKeys);
 
-                        tvScanButtonLabel.setText("Scan & Filter (" + allQueriedItems.size() + ")");
+                        tvScanButtonLabel.setText("扫描与筛选（" + allQueriedItems.size() + "）");
                         int consuming = 0;
                         long totalQuotaBytes = 0;
                         for (StorageScanner.MediaItem it : allQueriedItems) {
@@ -414,7 +414,7 @@ public class NativeToolkitDialog {
                                 totalQuotaBytes += it.quotaBytes;
                             }
                         }
-                        tvResultsStatus.setText(allQueriedItems.size() + " matched • " + consuming + " consuming (" + StorageScanner.formatBytes(totalQuotaBytes) + ")");
+                        tvResultsStatus.setText(allQueriedItems.size() + " 已匹配 • " + consuming + " 占用（" + StorageScanner.formatBytes(totalQuotaBytes) + "）");
                         currentPageRef[0] = 0;
                         if (updateSelectionSummaryRef[0] != null) updateSelectionSummaryRef[0].run();
                         renderResults(activity, resultsListContainer, allQueriedItems, selectedMediaKeys, isGridViewRef[0], updateSelectionSummaryRef[0], density, theme, currentPageRef);
@@ -425,8 +425,8 @@ public class NativeToolkitDialog {
                     MAIN_HANDLER.post(() -> {
                         if (scanSeq != sScanSequence.get()) return;
                         if (sProgressBar != null) sProgressBar.setVisibility(View.GONE);
-                        tvScanButtonLabel.setText("Scan & Filter");
-                        tvResultsStatus.setText("Scan error: " + t.getMessage());
+                        tvScanButtonLabel.setText("扫描与筛选");
+                        tvResultsStatus.setText("扫描出错：" + t.getMessage());
                     });
                 }
             });
@@ -513,7 +513,7 @@ public class NativeToolkitDialog {
         sourceHeaderRow.addView(badge1);
 
         TextView tvSourceTitle = new TextView(activity);
-        tvSourceTitle.setText("Choose Source");
+        tvSourceTitle.setText("选择来源");
         tvSourceTitle.setTextSize(14f);
         tvSourceTitle.setTypeface(null, Typeface.BOLD);
         tvSourceTitle.setTextColor(theme.textPrimary);
@@ -679,7 +679,7 @@ public class NativeToolkitDialog {
                     }
                     int count = updateFilterVisibility(activity, src, filterCardsRef[0], filtersAccordionContainerRef[0], density);
                     if (tvFiltersTitleRef[0] != null) {
-                        tvFiltersTitleRef[0].setText("Configure Filters (" + count + ")");
+                        tvFiltersTitleRef[0].setText("配置筛选条件（" + count + "）");
                     }
                     updateActionStates(src, currentCriteria, actionButtonsMap);
                     onFilterChanged.run();
@@ -690,7 +690,7 @@ public class NativeToolkitDialog {
                         sLockedFolderAuthenticated = true;
                         applySourceChange.run();
                     }, () -> {
-                        Toast.makeText(activity, "Biometric authentication required to view Locked Folder", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "查看「已锁定文件夹」需要生物识别验证", Toast.LENGTH_SHORT).show();
                     });
                     return;
                 }
@@ -723,7 +723,7 @@ public class NativeToolkitDialog {
 
         TextView tvFiltersTitle = new TextView(activity);
         tvFiltersTitleRef[0] = tvFiltersTitle;
-        tvFiltersTitle.setText("Configure Filters");
+        tvFiltersTitle.setText("配置筛选条件");
         tvFiltersTitle.setTextSize(14f);
         tvFiltersTitle.setTypeface(null, Typeface.BOLD);
         tvFiltersTitle.setTextColor(theme.textPrimary);
@@ -734,7 +734,7 @@ public class NativeToolkitDialog {
         tvFiltersActiveBadge.setTypeface(null, Typeface.BOLD);
         tvFiltersActiveBadge.setTextColor(theme.textSecondary);
         tvFiltersActiveBadge.setBackground(createRoundedDrawable(theme.surfaceContainer, 10 * density));
-        tvFiltersActiveBadge.setText("All Media (No filters)");
+        tvFiltersActiveBadge.setText("全部媒体（不筛选）");
         tvFiltersActiveBadge.setSingleLine(true);
         tvFiltersActiveBadge.setEllipsize(TextUtils.TruncateAt.END);
         int fabPadH = (int) (7 * density);
@@ -781,12 +781,12 @@ public class NativeToolkitDialog {
 
         filterCardsRef[0] = build21FiltersAccordion(activity, filtersAccordionContainer, density, theme, onFilterChanged);
         int initialFilterCount = updateFilterVisibility(activity, currentCriteria.source, filterCardsRef[0], filtersAccordionContainer, density);
-        tvFiltersTitle.setText("Configure Filters (" + initialFilterCount + ")");
+        tvFiltersTitle.setText("配置筛选条件（" + initialFilterCount + "）");
 
         // Scan / Filter Trigger Buttons
 
         TextView btnResetFilters = new TextView(activity);
-        btnResetFilters.setText("Reset Filters");
+        btnResetFilters.setText("重置筛选");
         btnResetFilters.setTextSize(13f);
         btnResetFilters.setTypeface(null, Typeface.BOLD);
         btnResetFilters.setTextColor(theme.primary);
@@ -807,7 +807,7 @@ public class NativeToolkitDialog {
         btnApplyScan.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
         btnApplyScan.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.4f));
 
-        tvScanButtonLabel.setText("Apply & Scan");
+        tvScanButtonLabel.setText("应用并扫描");
         tvScanButtonLabel.setTextSize(13.5f);
         tvScanButtonLabel.setTypeface(null, Typeface.BOLD);
         tvScanButtonLabel.setTextColor(theme.onPrimary);
@@ -825,13 +825,13 @@ public class NativeToolkitDialog {
                     summary.append(activeList.get(i).first);
                 }
                 if (activeList.size() > 2) summary.append("...");
-                tvFiltersActiveBadge.setText(activeCount + " Active: " + summary.toString());
+                tvFiltersActiveBadge.setText(activeCount + " 已启用：" + summary.toString());
                 tvFiltersActiveBadge.setTextColor(theme.onPrimaryContainer);
                 tvFiltersActiveBadge.setBackground(createRoundedDrawable(theme.primaryContainer, 10 * density));
                 tvFiltersActiveBadge.setVisibility(View.VISIBLE);
                 hChipsScroll.setVisibility(View.VISIBLE);
             } else {
-                tvFiltersActiveBadge.setText("All Media (No filters)");
+                tvFiltersActiveBadge.setText("全部媒体（不筛选）");
                 tvFiltersActiveBadge.setTextColor(theme.textSecondary);
                 tvFiltersActiveBadge.setBackground(createRoundedDrawable(theme.surfaceContainer, 10 * density));
                 tvFiltersActiveBadge.setVisibility(View.VISIBLE);
@@ -872,7 +872,7 @@ public class NativeToolkitDialog {
                     item.second.run();
                     filterCardsRef[0] = build21FiltersAccordion(activity, filtersAccordionContainer, density, theme, onFilterChanged);
                     int cCount = updateFilterVisibility(activity, currentCriteria.source, filterCardsRef[0], filtersAccordionContainer, density);
-                    if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("Configure Filters (" + cCount + ")");
+                    if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("配置筛选条件（" + cCount + "）");
                     onFilterChanged.run();
                 });
                 chipsContainer.addView(chip);
@@ -899,9 +899,9 @@ public class NativeToolkitDialog {
             currentCriteria.source = savedSource;
             filterCardsRef[0] = build21FiltersAccordion(activity, filtersAccordionContainer, density, theme, onFilterChanged);
             int rCount = updateFilterVisibility(activity, currentCriteria.source, filterCardsRef[0], filtersAccordionContainer, density);
-            if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("Configure Filters (" + rCount + ")");
+            if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("配置筛选条件（" + rCount + "）");
             onFilterChanged.run();
-            Toast.makeText(activity, "Reset all filters to default", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "把全部筛选条件恢复默认", Toast.LENGTH_SHORT).show();
         });
 
         btnApplyScan.setOnClickListener(v -> {
@@ -936,14 +936,14 @@ public class NativeToolkitDialog {
         actionHeaderRow.addView(badge3);
 
         TextView tvActionsTitle = new TextView(activity);
-        tvActionsTitle.setText("Choose Action (13)");
+        tvActionsTitle.setText("选择操作（13）");
         tvActionsTitle.setTextSize(14f);
         tvActionsTitle.setTypeface(null, Typeface.BOLD);
         tvActionsTitle.setTextColor(theme.textPrimary);
         actionHeaderRow.addView(tvActionsTitle);
 
         TextView tvActionsActiveBadge = new TextView(activity);
-        tvActionsActiveBadge.setText("0 selected");
+        tvActionsActiveBadge.setText("已选 0 项");
         tvActionsActiveBadge.setTextSize(10.5f);
         tvActionsActiveBadge.setTypeface(null, Typeface.BOLD);
         tvActionsActiveBadge.setTextColor(theme.onPrimaryContainer);
@@ -1024,7 +1024,7 @@ public class NativeToolkitDialog {
         resultsHeader.setOrientation(LinearLayout.VERTICAL);
         resultsHeader.setPadding(0, (int) (8 * density), 0, (int) (6 * density));
 
-        LinearLayout resTitleRow = createSectionHeader(activity, 4, "Matched Media Results", density, theme);
+        LinearLayout resTitleRow = createSectionHeader(activity, 4, "匹配结果", density, theme);
         resultsHeader.addView(resTitleRow);
 
         HorizontalScrollView hControlsScroll = new HorizontalScrollView(activity);
@@ -1040,7 +1040,7 @@ public class NativeToolkitDialog {
         controlsRow.setPadding((int) (28 * density), 0, 0, 0);
 
         TextView btnSelectAll = new TextView(activity);
-        btnSelectAll.setText("All");
+        btnSelectAll.setText("全选");
         btnSelectAll.setTextSize(11f);
         btnSelectAll.setTypeface(null, Typeface.BOLD);
         btnSelectAll.setTextColor(theme.primary);
@@ -1054,7 +1054,7 @@ public class NativeToolkitDialog {
         controlsRow.addView(btnSelectAll);
 
         TextView btnClearSelect = new TextView(activity);
-        btnClearSelect.setText("None");
+        btnClearSelect.setText("全不选");
         btnClearSelect.setTextSize(11f);
         btnClearSelect.setTypeface(null, Typeface.BOLD);
         btnClearSelect.setTextColor(theme.textSecondary);
@@ -1082,7 +1082,7 @@ public class NativeToolkitDialog {
         controlsRow.addView(btnSort);
 
         TextView btnToggleView = new TextView(activity);
-        btnToggleView.setText(isGridViewRef[0] ? "⊞ Grid" : "☰ List");
+        btnToggleView.setText(isGridViewRef[0] ? "⊞ 网格" : "☰ 列表");
         btnToggleView.setTextSize(11f);
         btnToggleView.setTypeface(null, Typeface.BOLD);
         btnToggleView.setTextColor(theme.onPrimaryContainer);
@@ -1095,7 +1095,7 @@ public class NativeToolkitDialog {
         hControlsScroll.addView(controlsRow);
         resultsHeader.addView(hControlsScroll);
 
-        tvResultsStatus.setText("Scanning items...");
+        tvResultsStatus.setText("正在扫描项目…");
         tvResultsStatus.setTextSize(11.5f);
         tvResultsStatus.setTextColor(theme.textSecondary);
         tvResultsStatus.setPadding((int) (28 * density), 0, 0, 0);
@@ -1108,7 +1108,7 @@ public class NativeToolkitDialog {
 
         updateSelectionSummaryRef[0] = () -> {
             int selCount = selectedMediaKeys.size();
-            tvActionsActiveBadge.setText(selCount + " selected");
+            tvActionsActiveBadge.setText(selCount + " 项已选");
         };
 
         btnSort.setOnClickListener(v -> {
@@ -1136,7 +1136,7 @@ public class NativeToolkitDialog {
 
         btnToggleView.setOnClickListener(v -> {
             isGridViewRef[0] = !isGridViewRef[0];
-            btnToggleView.setText(isGridViewRef[0] ? "⊞ Grid" : "☰ List");
+            btnToggleView.setText(isGridViewRef[0] ? "⊞ 网格" : "☰ 列表");
             renderResults(activity, resultsListContainer, allQueriedItems, selectedMediaKeys, isGridViewRef[0], updateSelectionSummaryRef[0], density, theme, currentPageRef);
         });
 
@@ -1154,7 +1154,7 @@ public class NativeToolkitDialog {
             }
             filterCardsRef[0] = build21FiltersAccordion(activity, filtersAccordionContainer, density, theme, onFilterChanged);
             int rCount = updateFilterVisibility(activity, currentCriteria.source, filterCardsRef[0], filtersAccordionContainer, density);
-            if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("Configure Filters (" + rCount + ")");
+            if (tvFiltersTitleRef[0] != null) tvFiltersTitleRef[0].setText("配置筛选条件（" + rCount + "）");
             updateActionStates(currentCriteria.source, currentCriteria, actionButtonsMap);
             if (updateChipsAndBadgeRef[0] != null) updateChipsAndBadgeRef[0].run();
 
@@ -1173,7 +1173,7 @@ public class NativeToolkitDialog {
 
     btnRefresh.setOnClickListener(v -> {
         if (onRefreshRef[0] != null) onRefreshRef[0].run();
-        Toast.makeText(activity, "Toolkit refreshed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "工具箱已刷新", Toast.LENGTH_SHORT).show();
     });
 
         btnClose.setOnClickListener(v -> dialog.dismiss());
@@ -1324,7 +1324,7 @@ public class NativeToolkitDialog {
         box.setPadding(p, p, p, (int) (14 * density));
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Select Target Albums");
+        tvTitle.setText("选择目标相册");
         tvTitle.setTextSize(15f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
@@ -1340,7 +1340,7 @@ public class NativeToolkitDialog {
         box.addView(scroll);
 
         TextView btnDone = new TextView(activity);
-        btnDone.setText("Done");
+        btnDone.setText("完成");
         btnDone.setTextSize(12.5f);
         btnDone.setTypeface(null, Typeface.BOLD);
         btnDone.setTextColor(theme.onPrimary);
@@ -1452,7 +1452,7 @@ public class NativeToolkitDialog {
                         sLockedFolderAuthenticated = true;
                         applySourceChange.run();
                     }, () -> {
-                        Toast.makeText(activity, "Biometric authentication required to view Locked Folder", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "查看「已锁定文件夹」需要生物识别验证", Toast.LENGTH_SHORT).show();
                     });
                     return;
                 }
@@ -1482,11 +1482,11 @@ public class NativeToolkitDialog {
         fsTbLp.bottomMargin = (int) (6 * density);
         fsTopBar.setLayoutParams(fsTbLp);
 
-        LinearLayout step2Header = createStepBadgeWithLabel(activity, "2", "FILTERS STUDIO", density, theme);
+        LinearLayout step2Header = createStepBadgeWithLabel(activity, "2", "筛选工作台", density, theme);
         fsTopBar.addView(step2Header);
 
         TextView tvStudioBadge = new TextView(activity);
-        tvStudioBadge.setText("18 Available • 0 Active");
+        tvStudioBadge.setText("18 个可用 • 0 个已启用");
         tvStudioBadge.setTextSize(10f);
         tvStudioBadge.setTypeface(null, Typeface.BOLD);
         tvStudioBadge.setTextColor(theme.onPrimaryContainer);
@@ -1500,7 +1500,7 @@ public class NativeToolkitDialog {
         fsTopBar.addView(tvStudioBadge);
 
         TextView btnResetFilters = new TextView(activity);
-        btnResetFilters.setText("Reset");
+        btnResetFilters.setText("重置");
         btnResetFilters.setTextSize(10.5f);
         btnResetFilters.setTypeface(null, Typeface.BOLD);
         btnResetFilters.setTextColor(theme.primary);
@@ -1521,10 +1521,10 @@ public class NativeToolkitDialog {
         categoryTabsGroup.setPadding((int) (2 * density), (int) (2 * density), (int) (2 * density), (int) (2 * density));
 
         String[] categoryTitles = new String[]{
-                "Time & Dimensions (4)",
-                "Media & Storage (4)",
-                "Status & Flags (6)",
-                "Search & Sort (4)"
+                "时间与尺寸（4）",
+                "媒体与存储（4）",
+                "状态与标记（6）",
+                "搜索与排序（4）"
         };
         int[] categoryIcons = new int[]{
                 MaterialVectorDrawable.TYPE_CALENDAR,
@@ -1579,7 +1579,7 @@ public class NativeToolkitDialog {
 
         Runnable updateFilterBadge = () -> {
             int active = getActiveFilterList(currentCriteria).size();
-            tvStudioBadge.setText("18 Available • " + active + " Active");
+            tvStudioBadge.setText("18 个可用 • " + active + " 个已启用");
         };
 
         // ── Panel 0: Time & Dimensions ──
@@ -1598,7 +1598,7 @@ public class NativeToolkitDialog {
         p0DateHdr.setPadding(0, 0, 0, (int) (3 * density));
 
         TextView tvDateIntervalTitle = new TextView(activity);
-        tvDateIntervalTitle.setText("Date Interval");
+        tvDateIntervalTitle.setText("日期区间");
         tvDateIntervalTitle.setTextSize(11f);
         tvDateIntervalTitle.setTypeface(null, Typeface.BOLD);
         tvDateIntervalTitle.setTextColor(theme.textPrimary);
@@ -1611,7 +1611,7 @@ public class NativeToolkitDialog {
         View p0dHdrSpacer = new View(activity);
         p0DateHdr.addView(p0dHdrSpacer, new LinearLayout.LayoutParams(0, 0, 1f));
 
-        LinearLayout grpRange = createSegmentedGroup(activity, new String[]{"Include", "Exclude"},
+        LinearLayout grpRange = createSegmentedGroup(activity, new String[]{"包含", "排除"},
                 "exclude".equals(currentCriteria.intervalType) ? 1 : 0, density, theme, idx -> {
                     currentCriteria.intervalType = (idx == 1) ? "exclude" : "include";
                     updateFilterBadge.run();
@@ -1622,7 +1622,7 @@ public class NativeToolkitDialog {
         grpRange.setLayoutParams(grpRangeLp);
         p0DateHdr.addView(grpRange);
 
-        LinearLayout grpDateType = createSegmentedGroup(activity, new String[]{"Taken", "Uploaded"},
+        LinearLayout grpDateType = createSegmentedGroup(activity, new String[]{"拍摄时间", "上传时间"},
                 "uploaded".equals(currentCriteria.dateType) ? 1 : 0, density, theme, idx -> {
                     currentCriteria.dateType = (idx == 1) ? "uploaded" : "taken";
                     updateFilterBadge.run();
@@ -1642,7 +1642,7 @@ public class NativeToolkitDialog {
         TextView btnFrom = new TextView(activity);
         btnFrom.setText(currentCriteria.lowerBoundaryDate > 0
                 ? (dFmt.format(new Date(currentCriteria.lowerBoundaryDate)) + " " + tFmt.format(new Date(currentCriteria.lowerBoundaryDate)))
-                : "From: Any Date");
+                : "从：任意日期");
         btnFrom.setTextSize(10.5f);
         btnFrom.setTypeface(null, Typeface.BOLD);
         btnFrom.setTextColor(currentCriteria.lowerBoundaryDate > 0 ? theme.primary : theme.textSecondary);
@@ -1666,7 +1666,7 @@ public class NativeToolkitDialog {
         TextView btnTo = new TextView(activity);
         btnTo.setText(currentCriteria.higherBoundaryDate > 0
                 ? (dFmt.format(new Date(currentCriteria.higherBoundaryDate)) + " " + tFmt.format(new Date(currentCriteria.higherBoundaryDate)))
-                : "To: Any Date");
+                : "至：任意日期");
         btnTo.setTextSize(10.5f);
         btnTo.setTypeface(null, Typeface.BOLD);
         btnTo.setTextColor(currentCriteria.higherBoundaryDate > 0 ? theme.primary : theme.textSecondary);
@@ -1681,7 +1681,7 @@ public class NativeToolkitDialog {
         p0DateRow.addView(btnTo);
 
         TextView btnDateClear = new TextView(activity);
-        btnDateClear.setText("Clear");
+        btnDateClear.setText("清除");
         btnDateClear.setTextSize(10.5f);
         btnDateClear.setTypeface(null, Typeface.BOLD);
         btnDateClear.setTextColor(theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A);
@@ -1735,9 +1735,9 @@ public class NativeToolkitDialog {
         btnDateClear.setOnClickListener(v -> {
             currentCriteria.lowerBoundaryDate = 0;
             currentCriteria.higherBoundaryDate = 0;
-            btnFrom.setText("From: Any Date");
+            btnFrom.setText("从：任意日期");
             btnFrom.setTextColor(theme.textSecondary);
-            btnTo.setText("To: Any Date");
+            btnTo.setText("至：任意日期");
             btnTo.setTextColor(theme.textSecondary);
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -1764,7 +1764,7 @@ public class NativeToolkitDialog {
         colSize.setOrientation(LinearLayout.VERTICAL);
         colSize.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView tvSizeTitle = new TextView(activity);
-        tvSizeTitle.setText("Size (MB)");
+        tvSizeTitle.setText("大小（MB）");
         tvSizeTitle.setTextSize(10.5f);
         tvSizeTitle.setTypeface(null, Typeface.BOLD);
         tvSizeTitle.setTextColor(theme.textPrimary);
@@ -1772,11 +1772,11 @@ public class NativeToolkitDialog {
         LinearLayout rowSizeIn = new LinearLayout(activity);
         rowSizeIn.setOrientation(LinearLayout.HORIZONTAL);
         rowSizeIn.setGravity(Gravity.CENTER_VERTICAL);
-        EditText etMinSize = createFilterStudioInput(activity, "> Min", currentCriteria.lowerBoundarySize > 0 ? StorageScanner.formatBytes(currentCriteria.lowerBoundarySize) : "", density, theme, s -> {
+        EditText etMinSize = createFilterStudioInput(activity, "> 最小", currentCriteria.lowerBoundarySize > 0 ? StorageScanner.formatBytes(currentCriteria.lowerBoundarySize) : "", density, theme, s -> {
             currentCriteria.lowerBoundarySize = parseBytesInput(s);
             updateFilterBadge.run();
         }, onFilterChanged);
-        EditText etMaxSize = createFilterStudioInput(activity, "< Max", currentCriteria.higherBoundarySize > 0 ? StorageScanner.formatBytes(currentCriteria.higherBoundarySize) : "", density, theme, s -> {
+        EditText etMaxSize = createFilterStudioInput(activity, "< 最大", currentCriteria.higherBoundarySize > 0 ? StorageScanner.formatBytes(currentCriteria.higherBoundarySize) : "", density, theme, s -> {
             currentCriteria.higherBoundarySize = parseBytesInput(s);
             updateFilterBadge.run();
         }, onFilterChanged);
@@ -1800,7 +1800,7 @@ public class NativeToolkitDialog {
         colRes.setOrientation(LinearLayout.VERTICAL);
         colRes.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView tvResTitle = new TextView(activity);
-        tvResTitle.setText("Resolution");
+        tvResTitle.setText("分辨率");
         tvResTitle.setTextSize(10.5f);
         tvResTitle.setTypeface(null, Typeface.BOLD);
         tvResTitle.setTextColor(theme.textPrimary);
@@ -1808,11 +1808,11 @@ public class NativeToolkitDialog {
         LinearLayout rowResIn = new LinearLayout(activity);
         rowResIn.setOrientation(LinearLayout.HORIZONTAL);
         rowResIn.setGravity(Gravity.CENTER_VERTICAL);
-        EditText etMinRes = createFilterStudioInput(activity, "Min px", currentCriteria.minWidth > 0 ? String.valueOf(currentCriteria.minWidth) : "", density, theme, s -> {
+        EditText etMinRes = createFilterStudioInput(activity, "最小 px", currentCriteria.minWidth > 0 ? String.valueOf(currentCriteria.minWidth) : "", density, theme, s -> {
             try { currentCriteria.minWidth = Integer.parseInt(s); } catch (Exception e) { currentCriteria.minWidth = 0; }
             updateFilterBadge.run();
         }, onFilterChanged);
-        EditText etMaxRes = createFilterStudioInput(activity, "Max px", currentCriteria.maxWidth > 0 ? String.valueOf(currentCriteria.maxWidth) : "", density, theme, s -> {
+        EditText etMaxRes = createFilterStudioInput(activity, "最大 px", currentCriteria.maxWidth > 0 ? String.valueOf(currentCriteria.maxWidth) : "", density, theme, s -> {
             try { currentCriteria.maxWidth = Integer.parseInt(s); } catch (Exception e) { currentCriteria.maxWidth = 0; }
             updateFilterBadge.run();
         }, onFilterChanged);
@@ -1836,7 +1836,7 @@ public class NativeToolkitDialog {
         colDur.setOrientation(LinearLayout.VERTICAL);
         colDur.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView tvDurTitle = new TextView(activity);
-        tvDurTitle.setText("Duration (s)");
+        tvDurTitle.setText("时长（秒）");
         tvDurTitle.setTextSize(10.5f);
         tvDurTitle.setTypeface(null, Typeface.BOLD);
         tvDurTitle.setTextColor(theme.textPrimary);
@@ -1844,11 +1844,11 @@ public class NativeToolkitDialog {
         LinearLayout rowDurIn = new LinearLayout(activity);
         rowDurIn.setOrientation(LinearLayout.HORIZONTAL);
         rowDurIn.setGravity(Gravity.CENTER_VERTICAL);
-        EditText etMinDur = createFilterStudioInput(activity, "Min s", currentCriteria.minDuration > 0 ? String.valueOf(currentCriteria.minDuration) : "", density, theme, s -> {
+        EditText etMinDur = createFilterStudioInput(activity, "最小 秒", currentCriteria.minDuration > 0 ? String.valueOf(currentCriteria.minDuration) : "", density, theme, s -> {
             try { currentCriteria.minDuration = Float.parseFloat(s); } catch (Exception e) { currentCriteria.minDuration = 0; }
             updateFilterBadge.run();
         }, onFilterChanged);
-        EditText etMaxDur = createFilterStudioInput(activity, "Max s", currentCriteria.maxDuration > 0 ? String.valueOf(currentCriteria.maxDuration) : "", density, theme, s -> {
+        EditText etMaxDur = createFilterStudioInput(activity, "最大 秒", currentCriteria.maxDuration > 0 ? String.valueOf(currentCriteria.maxDuration) : "", density, theme, s -> {
             try { currentCriteria.maxDuration = Float.parseFloat(s); } catch (Exception e) { currentCriteria.maxDuration = 0; }
             updateFilterBadge.run();
         }, onFilterChanged);
@@ -1878,13 +1878,13 @@ public class NativeToolkitDialog {
         LinearLayout colType = new LinearLayout(activity);
         colType.setOrientation(LinearLayout.VERTICAL);
         TextView tvType = new TextView(activity);
-        tvType.setText("Media Type");
+        tvType.setText("媒体类型");
         tvType.setTextSize(10.5f);
         tvType.setTypeface(null, Typeface.BOLD);
         tvType.setTextColor(theme.textPrimary);
         colType.addView(tvType);
         int typeIdx = "image".equals(currentCriteria.mediaType) ? 1 : "video".equals(currentCriteria.mediaType) ? 2 : "live".equals(currentCriteria.mediaType) ? 3 : 0;
-        colType.addView(createSegmentedGroup(activity, new String[]{"Any", "Photo", "Video", "Live"}, typeIdx, density, theme, idx -> {
+        colType.addView(createSegmentedGroup(activity, new String[]{"不限", "照片", "视频", "实况"}, typeIdx, density, theme, idx -> {
             currentCriteria.mediaType = (idx == 1) ? "image" : (idx == 2) ? "video" : (idx == 3) ? "live" : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -1898,13 +1898,13 @@ public class NativeToolkitDialog {
         LinearLayout colQuality = new LinearLayout(activity);
         colQuality.setOrientation(LinearLayout.VERTICAL);
         TextView tvQual = new TextView(activity);
-        tvQual.setText("Quality");
+        tvQual.setText("画质");
         tvQual.setTextSize(10.5f);
         tvQual.setTypeface(null, Typeface.BOLD);
         tvQual.setTextColor(theme.textPrimary);
         colQuality.addView(tvQual);
         int qualIdx = "original".equals(currentCriteria.quality) ? 1 : "storage-saver".equals(currentCriteria.quality) ? 2 : 0;
-        colQuality.addView(createSegmentedGroup(activity, new String[]{"Any", "Original", "Saver"}, qualIdx, density, theme, idx -> {
+        colQuality.addView(createSegmentedGroup(activity, new String[]{"不限", "原画质", "节省"}, qualIdx, density, theme, idx -> {
             currentCriteria.quality = (idx == 1) ? "original" : (idx == 2) ? "storage-saver" : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -1918,13 +1918,13 @@ public class NativeToolkitDialog {
         LinearLayout colQuota = new LinearLayout(activity);
         colQuota.setOrientation(LinearLayout.VERTICAL);
         TextView tvQuota = new TextView(activity);
-        tvQuota.setText("Storage Quota");
+        tvQuota.setText("存储配额");
         tvQuota.setTextSize(10.5f);
         tvQuota.setTypeface(null, Typeface.BOLD);
         tvQuota.setTextColor(theme.textPrimary);
         colQuota.addView(tvQuota);
         int spaceIdx = (currentCriteria.space == StorageScanner.SpaceFilter.CONSUMING) ? 1 : (currentCriteria.space == StorageScanner.SpaceFilter.NON_CONSUMING) ? 2 : 0;
-        colQuota.addView(createSegmentedGroup(activity, new String[]{"Any", "Consuming", "Free"}, spaceIdx, density, theme, idx -> {
+        colQuota.addView(createSegmentedGroup(activity, new String[]{"不限", "占用配额", "免费"}, spaceIdx, density, theme, idx -> {
             currentCriteria.space = (idx == 1) ? StorageScanner.SpaceFilter.CONSUMING : (idx == 2) ? StorageScanner.SpaceFilter.NON_CONSUMING : StorageScanner.SpaceFilter.ANY;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -1938,7 +1938,7 @@ public class NativeToolkitDialog {
         LinearLayout colSim = new LinearLayout(activity);
         colSim.setOrientation(LinearLayout.VERTICAL);
         TextView tvSim = new TextView(activity);
-        tvSim.setText("Similarity Threshold");
+        tvSim.setText("相似度阈值");
         tvSim.setTextSize(10.5f);
         tvSim.setTypeface(null, Typeface.BOLD);
         tvSim.setTextColor(theme.textPrimary);
@@ -1964,13 +1964,13 @@ public class NativeToolkitDialog {
         LinearLayout colBackup = new LinearLayout(activity);
         colBackup.setOrientation(LinearLayout.VERTICAL);
         TextView tvBkp = new TextView(activity);
-        tvBkp.setText("Backup");
+        tvBkp.setText("备份状态");
         tvBkp.setTextSize(10.5f);
         tvBkp.setTypeface(null, Typeface.BOLD);
         tvBkp.setTextColor(theme.textPrimary);
         colBackup.addView(tvBkp);
         int bkpIdx = "full".equals(currentCriteria.uploadStatus) ? 1 : 0;
-        colBackup.addView(createSegmentedGroup(activity, new String[]{"Any", "Cloud"}, bkpIdx, density, theme, idx -> {
+        colBackup.addView(createSegmentedGroup(activity, new String[]{"不限", "云端"}, bkpIdx, density, theme, idx -> {
             currentCriteria.uploadStatus = (idx == 1) ? "full" : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -1984,13 +1984,13 @@ public class NativeToolkitDialog {
         LinearLayout colArch = new LinearLayout(activity);
         colArch.setOrientation(LinearLayout.VERTICAL);
         TextView tvArch = new TextView(activity);
-        tvArch.setText("Archive");
+        tvArch.setText("归档");
         tvArch.setTextSize(10.5f);
         tvArch.setTypeface(null, Typeface.BOLD);
         tvArch.setTextColor(theme.textPrimary);
         colArch.addView(tvArch);
         int archIdx = Boolean.TRUE.equals(currentCriteria.archived) ? 1 : 0;
-        colArch.addView(createSegmentedGroup(activity, new String[]{"Active", "Archived"}, archIdx, density, theme, idx -> {
+        colArch.addView(createSegmentedGroup(activity, new String[]{"启用", "已归档"}, archIdx, density, theme, idx -> {
             currentCriteria.archived = (idx == 1) ? Boolean.TRUE : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -2004,13 +2004,13 @@ public class NativeToolkitDialog {
         LinearLayout colFav = new LinearLayout(activity);
         colFav.setOrientation(LinearLayout.VERTICAL);
         TextView tvFav = new TextView(activity);
-        tvFav.setText("Favorites");
+        tvFav.setText("收藏");
         tvFav.setTextSize(10.5f);
         tvFav.setTypeface(null, Typeface.BOLD);
         tvFav.setTextColor(theme.textPrimary);
         colFav.addView(tvFav);
         int favIdx = Boolean.TRUE.equals(currentCriteria.favorite) ? 1 : currentCriteria.excludeFavorites ? 2 : 0;
-        colFav.addView(createSegmentedGroup(activity, new String[]{"Any", "Only", "Omit"}, favIdx, density, theme, idx -> {
+        colFav.addView(createSegmentedGroup(activity, new String[]{"不限", "仅", "排除"}, favIdx, density, theme, idx -> {
             currentCriteria.favorite = (idx == 1) ? Boolean.TRUE : null;
             currentCriteria.excludeFavorites = (idx == 2);
             updateFilterBadge.run();
@@ -2025,13 +2025,13 @@ public class NativeToolkitDialog {
         LinearLayout colShared = new LinearLayout(activity);
         colShared.setOrientation(LinearLayout.VERTICAL);
         TextView tvSh = new TextView(activity);
-        tvSh.setText("Shared");
+        tvSh.setText("共享");
         tvSh.setTextSize(10.5f);
         tvSh.setTypeface(null, Typeface.BOLD);
         tvSh.setTextColor(theme.textPrimary);
         colShared.addView(tvSh);
         int shIdx = currentCriteria.excludeShared ? 1 : 0;
-        colShared.addView(createSegmentedGroup(activity, new String[]{"Include", "Omit"}, shIdx, density, theme, idx -> {
+        colShared.addView(createSegmentedGroup(activity, new String[]{"包含", "排除"}, shIdx, density, theme, idx -> {
             currentCriteria.excludeShared = (idx == 1);
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -2045,13 +2045,13 @@ public class NativeToolkitDialog {
         LinearLayout colOwn = new LinearLayout(activity);
         colOwn.setOrientation(LinearLayout.VERTICAL);
         TextView tvOwn = new TextView(activity);
-        tvOwn.setText("Ownership");
+        tvOwn.setText("归属");
         tvOwn.setTextSize(10.5f);
         tvOwn.setTypeface(null, Typeface.BOLD);
         tvOwn.setTextColor(theme.textPrimary);
         colOwn.addView(tvOwn);
         int ownIdx = Boolean.TRUE.equals(currentCriteria.owned) ? 1 : 0;
-        colOwn.addView(createSegmentedGroup(activity, new String[]{"Any", "Mine"}, ownIdx, density, theme, idx -> {
+        colOwn.addView(createSegmentedGroup(activity, new String[]{"不限", "我的"}, ownIdx, density, theme, idx -> {
             currentCriteria.owned = (idx == 1) ? Boolean.TRUE : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -2065,13 +2065,13 @@ public class NativeToolkitDialog {
         LinearLayout colLoc = new LinearLayout(activity);
         colLoc.setOrientation(LinearLayout.VERTICAL);
         TextView tvLoc = new TextView(activity);
-        tvLoc.setText("Location");
+        tvLoc.setText("位置");
         tvLoc.setTextSize(10.5f);
         tvLoc.setTypeface(null, Typeface.BOLD);
         tvLoc.setTextColor(theme.textPrimary);
         colLoc.addView(tvLoc);
         int locIdx = Boolean.TRUE.equals(currentCriteria.hasLocation) ? 1 : 0;
-        colLoc.addView(createSegmentedGroup(activity, new String[]{"Any", "GPS"}, locIdx, density, theme, idx -> {
+        colLoc.addView(createSegmentedGroup(activity, new String[]{"不限", "GPS"}, locIdx, density, theme, idx -> {
             currentCriteria.hasLocation = (idx == 1) ? Boolean.TRUE : null;
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -2092,13 +2092,13 @@ public class NativeToolkitDialog {
         LinearLayout colSort = new LinearLayout(activity);
         colSort.setOrientation(LinearLayout.VERTICAL);
         TextView tvSo = new TextView(activity);
-        tvSo.setText("Sort Order");
+        tvSo.setText("排序方式");
         tvSo.setTextSize(10.5f);
         tvSo.setTypeface(null, Typeface.BOLD);
         tvSo.setTextColor(theme.textPrimary);
         colSort.addView(tvSo);
         int sortIdx = currentCriteria.sortBySize ? 1 : 0;
-        colSort.addView(createSegmentedGroup(activity, new String[]{"Date", "Size (Desc)"}, sortIdx, density, theme, idx -> {
+        colSort.addView(createSegmentedGroup(activity, new String[]{"日期", "大小（降序）"}, sortIdx, density, theme, idx -> {
             currentCriteria.sortBySize = (idx == 1);
             updateFilterBadge.run();
             onFilterChanged.run();
@@ -2112,12 +2112,12 @@ public class NativeToolkitDialog {
         LinearLayout colQuery = new LinearLayout(activity);
         colQuery.setOrientation(LinearLayout.VERTICAL);
         TextView tvQ = new TextView(activity);
-        tvQ.setText("Search Query");
+        tvQ.setText("搜索关键词");
         tvQ.setTextSize(10.5f);
         tvQ.setTypeface(null, Typeface.BOLD);
         tvQ.setTextColor(theme.textPrimary);
         colQuery.addView(tvQ);
-        EditText etQuery = createFilterStudioInput(activity, "Query keywords...", currentCriteria.searchQuery != null ? currentCriteria.searchQuery : "", density, theme, s -> {
+        EditText etQuery = createFilterStudioInput(activity, "搜索关键词…", currentCriteria.searchQuery != null ? currentCriteria.searchQuery : "", density, theme, s -> {
             currentCriteria.searchQuery = s;
             updateFilterBadge.run();
         }, onFilterChanged);
@@ -2131,7 +2131,7 @@ public class NativeToolkitDialog {
         LinearLayout colFile = new LinearLayout(activity);
         colFile.setOrientation(LinearLayout.VERTICAL);
         TextView tvFn = new TextView(activity);
-        tvFn.setText("Filename Regex");
+        tvFn.setText("文件名正则");
         tvFn.setTextSize(10.5f);
         tvFn.setTypeface(null, Typeface.BOLD);
         tvFn.setTextColor(theme.textPrimary);
@@ -2150,7 +2150,7 @@ public class NativeToolkitDialog {
         LinearLayout colDesc = new LinearLayout(activity);
         colDesc.setOrientation(LinearLayout.VERTICAL);
         TextView tvDc = new TextView(activity);
-        tvDc.setText("Caption / Target");
+        tvDc.setText("标题 / 目标");
         tvDc.setTextSize(10.5f);
         tvDc.setTypeface(null, Typeface.BOLD);
         tvDc.setTextColor(theme.textPrimary);
@@ -2158,7 +2158,7 @@ public class NativeToolkitDialog {
 
         if (currentCriteria.source == StorageScanner.SourceType.ALBUMS) {
             TextView btnAlbums = new TextView(activity);
-            btnAlbums.setText(!currentCriteria.albumsInclude.isEmpty() ? (currentCriteria.albumsInclude.size() + " Albums Selected") : "Select Albums...");
+            btnAlbums.setText(!currentCriteria.albumsInclude.isEmpty() ? (currentCriteria.albumsInclude.size() + " 个相册已选") : "选择相册…");
             btnAlbums.setTextSize(11f);
             btnAlbums.setTypeface(null, Typeface.BOLD);
             btnAlbums.setTextColor(theme.primary);
@@ -2168,7 +2168,7 @@ public class NativeToolkitDialog {
             btnAlbums.setOnClickListener(v -> showTabletAlbumSelectionDialog(activity, theme, density, onFilterChanged));
             colDesc.addView(btnAlbums);
         } else {
-            EditText etDesc = createFilterStudioInput(activity, "Caption text...", currentCriteria.descriptionRegex != null ? currentCriteria.descriptionRegex : "", density, theme, s -> {
+            EditText etDesc = createFilterStudioInput(activity, "标题文字…", currentCriteria.descriptionRegex != null ? currentCriteria.descriptionRegex : "", density, theme, s -> {
                 currentCriteria.descriptionRegex = s;
                 updateFilterBadge.run();
             }, onFilterChanged);
@@ -2190,7 +2190,7 @@ public class NativeToolkitDialog {
             updateTabStyles.run();
             updateFilterBadge.run();
             onFilterChanged.run();
-            Toast.makeText(activity, "Filters reset", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "筛选条件已重置", Toast.LENGTH_SHORT).show();
         });
 
         View div2 = new View(activity);
@@ -2223,7 +2223,7 @@ public class NativeToolkitDialog {
                     totalQuotaBytes += it.quotaBytes;
                 }
             }
-            tvResultsStatus.setText(total + " matched • " + selCount + " selected • " + consuming + " consuming (" + StorageScanner.formatBytes(totalQuotaBytes) + ")");
+            tvResultsStatus.setText(total + " 已匹配 • " + selCount + " 项已选 • " + consuming + " 占用（" + StorageScanner.formatBytes(totalQuotaBytes) + "）");
         };
 
         LinearLayout actionsGrid = new LinearLayout(activity);
@@ -2231,23 +2231,23 @@ public class NativeToolkitDialog {
         actionsGrid.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         String[][] actionDefsRow1 = new String[][]{
-                {"toNewAlbum", "New Album", String.valueOf(MaterialVectorDrawable.TYPE_ADD)},
-                {"toExistingAlbum", "Add to Album", String.valueOf(MaterialVectorDrawable.TYPE_FOLDER)},
-                {"removeFromAlbum", "Remove Album", String.valueOf(MaterialVectorDrawable.TYPE_COLLAPSE)},
-                {"setDateFromFilename", "Date Name", String.valueOf(MaterialVectorDrawable.TYPE_CALENDAR)},
-                {"toArchive", "Archive", String.valueOf(MaterialVectorDrawable.TYPE_ARCHIVE)},
-                {"unArchive", "Un-Archive", String.valueOf(MaterialVectorDrawable.TYPE_EXPAND)},
-                {"toFavorite", "Favorite", String.valueOf(MaterialVectorDrawable.TYPE_STAR)}
+                {"toNewAlbum", "新建相册", String.valueOf(MaterialVectorDrawable.TYPE_ADD)},
+                {"toExistingAlbum", "加入相册", String.valueOf(MaterialVectorDrawable.TYPE_FOLDER)},
+                {"removeFromAlbum", "移出相册", String.valueOf(MaterialVectorDrawable.TYPE_COLLAPSE)},
+                {"setDateFromFilename", "按文件名改日期", String.valueOf(MaterialVectorDrawable.TYPE_CALENDAR)},
+                {"toArchive", "归档", String.valueOf(MaterialVectorDrawable.TYPE_ARCHIVE)},
+                {"unArchive", "取消归档", String.valueOf(MaterialVectorDrawable.TYPE_EXPAND)},
+                {"toFavorite", "收藏", String.valueOf(MaterialVectorDrawable.TYPE_STAR)}
         };
 
         String[][] actionDefsRow2 = new String[][]{
-                {"unFavorite", "Un-Favorite", String.valueOf(MaterialVectorDrawable.TYPE_STAR)},
-                {"lock", "To Locker", String.valueOf(MaterialVectorDrawable.TYPE_LOCK)},
-                {"unLock", "Unlock", String.valueOf(MaterialVectorDrawable.TYPE_LOCK)},
-                {"toTrash", "Trash", String.valueOf(MaterialVectorDrawable.TYPE_DELETE)},
-                {"restoreTrash", "Restore", String.valueOf(MaterialVectorDrawable.TYPE_REFRESH)},
-                {"exportDcim", "Export DCIM", String.valueOf(MaterialVectorDrawable.TYPE_DOWNLOAD)},
-                {"exportMetadata", "Export CSV", String.valueOf(MaterialVectorDrawable.TYPE_EXPORT)}
+                {"unFavorite", "取消收藏", String.valueOf(MaterialVectorDrawable.TYPE_STAR)},
+                {"lock", "移入保险箱", String.valueOf(MaterialVectorDrawable.TYPE_LOCK)},
+                {"unLock", "移出保险箱", String.valueOf(MaterialVectorDrawable.TYPE_LOCK)},
+                {"toTrash", "回收站", String.valueOf(MaterialVectorDrawable.TYPE_DELETE)},
+                {"restoreTrash", "还原", String.valueOf(MaterialVectorDrawable.TYPE_REFRESH)},
+                {"exportDcim", "导出到 DCIM", String.valueOf(MaterialVectorDrawable.TYPE_DOWNLOAD)},
+                {"exportMetadata", "导出 CSV", String.valueOf(MaterialVectorDrawable.TYPE_EXPORT)}
         };
 
         ItemsProvider selectedItemsProvider = () -> {
@@ -2300,7 +2300,7 @@ public class NativeToolkitDialog {
                 btn.setOnClickListener(v -> {
                     if (btn.getAlpha() < 0.6f) {
                         String disabledHint = getActionDisabledHint(actionId, currentCriteria);
-                        Toast.makeText(activity, disabledHint != null ? disabledHint : "Action not applicable for current source", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, disabledHint != null ? disabledHint : "当前来源不支持该操作", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     performActionClick(activity, actionId, actionLabel, selectedItemsProvider, runScanRef, density, theme);
@@ -2334,10 +2334,10 @@ public class NativeToolkitDialog {
         tb.setGravity(Gravity.CENTER_VERTICAL);
         tb.setPadding(0, 0, 0, (int) (4 * density));
 
-        LinearLayout step4Header = createStepBadgeWithLabel(activity, "4", "MATCHED MEDIA RESULTS", density, theme);
+        LinearLayout step4Header = createStepBadgeWithLabel(activity, "4", "匹配结果", density, theme);
         tb.addView(step4Header);
 
-        tvResultsStatus.setText("Scanning media...");
+        tvResultsStatus.setText("正在扫描媒体…");
         tvResultsStatus.setTextSize(11f);
         tvResultsStatus.setTextColor(theme.textSecondary);
         LinearLayout.LayoutParams rsLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -2349,18 +2349,18 @@ public class NativeToolkitDialog {
         tb.addView(tbSpacer, new LinearLayout.LayoutParams(0, 0, 1f));
 
         TextView btnSort = createCanvasToolbarButton(activity, "↕ " + currentSortOrder.shortLabel, theme.textPrimary, density, theme);
-        TextView btnViewToggle = createCanvasToolbarButton(activity, isGridViewRef[0] ? "⊞ Grid" : "☰ List", theme.onPrimaryContainer, density, theme);
+        TextView btnViewToggle = createCanvasToolbarButton(activity, isGridViewRef[0] ? "⊞ 网格" : "☰ 列表", theme.onPrimaryContainer, density, theme);
         btnViewToggle.setBackground(createActionPillDrawable(theme.primaryContainer, 8 * density));
 
         tb.addView(btnSort);
         tb.addView(btnViewToggle);
 
         TextView btnScan = new TextView(activity);
-        tvScanButtonLabel.setText("Apply & Scan");
+        tvScanButtonLabel.setText("应用并扫描");
         tvScanButtonLabel.setTextSize(11.5f);
         tvScanButtonLabel.setTypeface(null, Typeface.BOLD);
         tvScanButtonLabel.setTextColor(theme.onPrimary);
-        btnScan.setText("Apply & Scan");
+        btnScan.setText("应用并扫描");
         btnScan.setTextSize(11.5f);
         btnScan.setTypeface(null, Typeface.BOLD);
         btnScan.setTextColor(theme.onPrimary);
@@ -2407,7 +2407,7 @@ public class NativeToolkitDialog {
 
         btnViewToggle.setOnClickListener(v -> {
             isGridViewRef[0] = !isGridViewRef[0];
-            btnViewToggle.setText(isGridViewRef[0] ? "⊞ Grid" : "☰ List");
+            btnViewToggle.setText(isGridViewRef[0] ? "⊞ 网格" : "☰ 列表");
             renderResults(activity, resultsListContainer, allQueriedItems, selectedMediaKeys, isGridViewRef[0], updateSelectionSummaryRef[0], density, theme, currentPageRef);
         });
 
@@ -2436,7 +2436,7 @@ public class NativeToolkitDialog {
     private static List<Pair<String, Runnable>> getActiveFilterList(StorageScanner.FilterCriteria crit) {
         List<Pair<String, Runnable>> list = new ArrayList<>();
         if (!crit.albumsInclude.isEmpty()) {
-            list.add(new Pair<>("Albums: " + crit.albumsInclude.size(), () -> crit.albumsInclude.clear()));
+            list.add(new Pair<>("相册：" + crit.albumsInclude.size(), () -> crit.albumsInclude.clear()));
         }
         if (crit.searchQuery != null && !crit.searchQuery.trim().isEmpty()) {
             String q = crit.searchQuery.trim();
@@ -2444,7 +2444,7 @@ public class NativeToolkitDialog {
             list.add(new Pair<>("Search: \"" + q + "\"", () -> crit.searchQuery = ""));
         }
         if (!crit.albumsExclude.isEmpty()) {
-            list.add(new Pair<>("Excl. Albums: " + crit.albumsExclude.size(), () -> crit.albumsExclude.clear()));
+            list.add(new Pair<>("排除相册：" + crit.albumsExclude.size(), () -> crit.albumsExclude.clear()));
         }
         if (crit.lowerBoundaryDate > 0 || crit.higherBoundaryDate > 0) {
             list.add(new Pair<>("Date (" + crit.intervalType + ")", () -> {
@@ -2455,27 +2455,27 @@ public class NativeToolkitDialog {
         if (crit.fileNameRegex != null && !crit.fileNameRegex.trim().isEmpty()) {
             String fn = crit.fileNameRegex.trim();
             if (fn.length() > 12) fn = fn.substring(0, 10) + "..";
-            list.add(new Pair<>("File: " + fn, () -> crit.fileNameRegex = ""));
+            list.add(new Pair<>("文件：" + fn, () -> crit.fileNameRegex = ""));
         }
         if (crit.descriptionRegex != null && !crit.descriptionRegex.trim().isEmpty()) {
             String desc = crit.descriptionRegex.trim();
             if (desc.length() > 12) desc = desc.substring(0, 10) + "..";
-            list.add(new Pair<>("Desc: " + desc, () -> crit.descriptionRegex = ""));
+            list.add(new Pair<>("描述：" + desc, () -> crit.descriptionRegex = ""));
         }
         if (crit.space != null && crit.space != StorageScanner.SpaceFilter.ANY) {
-            list.add(new Pair<>("Space: " + crit.space.name().toLowerCase(), () -> crit.space = StorageScanner.SpaceFilter.ANY));
+            list.add(new Pair<>("空间：" + crit.space.name().toLowerCase(), () -> crit.space = StorageScanner.SpaceFilter.ANY));
         }
         if (crit.similarityThreshold > 0) {
-            list.add(new Pair<>("Similarity: " + (int) (crit.similarityThreshold * 100) + "%", () -> crit.similarityThreshold = 0f));
+            list.add(new Pair<>("相似度：" + (int) (crit.similarityThreshold * 100) + "%", () -> crit.similarityThreshold = 0f));
         }
         if (crit.lowerBoundarySize > 0 || crit.higherBoundarySize > 0) {
-            list.add(new Pair<>("Size Range", () -> {
+            list.add(new Pair<>("大小范围", () -> {
                 crit.lowerBoundarySize = 0;
                 crit.higherBoundarySize = 0;
             }));
         }
         if (crit.minWidth > 0 || crit.maxWidth > 0 || crit.minHeight > 0 || crit.maxHeight > 0) {
-            list.add(new Pair<>("Resolution", () -> {
+            list.add(new Pair<>("分辨率", () -> {
                 crit.minWidth = 0;
                 crit.maxWidth = 0;
                 crit.minHeight = 0;
@@ -2483,28 +2483,28 @@ public class NativeToolkitDialog {
             }));
         }
         if (crit.minDuration > 0 || crit.maxDuration > 0) {
-            list.add(new Pair<>("Duration", () -> {
+            list.add(new Pair<>("时长", () -> {
                 crit.minDuration = 0;
                 crit.maxDuration = 0;
             }));
         }
         if (crit.quality != null) {
-            list.add(new Pair<>("Quality: " + crit.quality, () -> crit.quality = null));
+            list.add(new Pair<>("画质：" + crit.quality, () -> crit.quality = null));
         }
         if (crit.mediaType != null) {
-            list.add(new Pair<>("Type: " + crit.mediaType, () -> crit.mediaType = null));
+            list.add(new Pair<>("类型：" + crit.mediaType, () -> crit.mediaType = null));
         }
         if (crit.uploadStatus != null) {
-            list.add(new Pair<>("Upload: " + crit.uploadStatus, () -> crit.uploadStatus = null));
+            list.add(new Pair<>("上传：" + crit.uploadStatus, () -> crit.uploadStatus = null));
         }
         if (crit.archived != null) {
-            list.add(new Pair<>("Archived: " + (crit.archived ? "Yes" : "No"), () -> crit.archived = null));
+            list.add(new Pair<>("归档：" + (crit.archived ? "是" : "否"), () -> crit.archived = null));
         }
         if (crit.owned != null) {
-            list.add(new Pair<>("Owned: " + (crit.owned ? "Yes" : "No"), () -> crit.owned = null));
+            list.add(new Pair<>("归属：" + (crit.owned ? "是" : "否"), () -> crit.owned = null));
         }
         if (crit.hasLocation != null || crit.boundSouth != null) {
-            list.add(new Pair<>("Location", () -> {
+            list.add(new Pair<>("位置", () -> {
                 crit.hasLocation = null;
                 crit.boundSouth = null;
                 crit.boundWest = null;
@@ -2513,16 +2513,16 @@ public class NativeToolkitDialog {
             }));
         }
         if (crit.favorite != null) {
-            list.add(new Pair<>("Favorite: " + (crit.favorite ? "Yes" : "No"), () -> crit.favorite = null));
+            list.add(new Pair<>("收藏：" + (crit.favorite ? "是" : "否"), () -> crit.favorite = null));
         }
         if (crit.excludeShared) {
-            list.add(new Pair<>("Excl. Shared", () -> crit.excludeShared = false));
+            list.add(new Pair<>("排除共享", () -> crit.excludeShared = false));
         }
         if (crit.excludeFavorites) {
-            list.add(new Pair<>("Excl. Favs", () -> crit.excludeFavorites = false));
+            list.add(new Pair<>("排除收藏", () -> crit.excludeFavorites = false));
         }
         if (!crit.sortBySize) {
-            list.add(new Pair<>("Sort: Default", () -> crit.sortBySize = true));
+            list.add(new Pair<>("排序：默认", () -> crit.sortBySize = true));
         }
         return list;
     }
@@ -2563,7 +2563,7 @@ public class NativeToolkitDialog {
         content.removeAllViews();
         if (availableAlbums.isEmpty()) {
             TextView tvEmpty = new TextView(activity);
-            tvEmpty.setText("No albums loaded.");
+            tvEmpty.setText("没有加载到相册。");
             tvEmpty.setTextColor(theme.textSecondary);
             content.addView(tvEmpty);
         } else {
@@ -2603,9 +2603,9 @@ public class NativeToolkitDialog {
         Runnable[] excludeAlbumsBadgeRef = new Runnable[1];
 
         // 1. Select Albums
-        cards.put("includeAlbums", addFilterCard(activity, container, density, theme, expandedSet, "Select Albums",
-                "Target specific albums (Albums source)",
-                () -> currentCriteria.albumsInclude.isEmpty() ? null : currentCriteria.albumsInclude.size() + " selected",
+        cards.put("includeAlbums", addFilterCard(activity, container, density, theme, expandedSet, "选择相册",
+                "指定目标相册（相册来源）",
+                () -> currentCriteria.albumsInclude.isEmpty() ? null : currentCriteria.albumsInclude.size() + " 项已选",
                 (content, updateBadge) -> {
                     includeAlbumsContentRef[0] = content;
                     includeAlbumsBadgeRef[0] = updateBadge;
@@ -2613,11 +2613,11 @@ public class NativeToolkitDialog {
                 }));
 
         // 2. Search Query
-        cards.put("search", addFilterCard(activity, container, density, theme, expandedSet, "Search Query",
-                "Query search results",
+        cards.put("search", addFilterCard(activity, container, density, theme, expandedSet, "搜索关键词",
+                "搜索结果的匹配方式",
                 () -> (currentCriteria.searchQuery != null && !currentCriteria.searchQuery.trim().isEmpty()) ? "\"" + currentCriteria.searchQuery.trim() + "\"" : null,
                 (content, updateBadge) -> {
-                    EditText et = createFilterInput(activity, density, theme, "Enter search query...");
+                    EditText et = createFilterInput(activity, density, theme, "输入搜索关键词…");
                     et.setText(currentCriteria.searchQuery != null ? currentCriteria.searchQuery : "");
                     et.addTextChangedListener(new DebounceWatcher(s -> {
                         currentCriteria.searchQuery = s;
@@ -2627,9 +2627,9 @@ public class NativeToolkitDialog {
                 }));
 
         // 3. Exclude Albums
-        cards.put("excludeAlbums", addFilterCard(activity, container, density, theme, expandedSet, "Exclude Albums",
-                "Omit media present in selected albums",
-                () -> currentCriteria.albumsExclude.isEmpty() ? null : currentCriteria.albumsExclude.size() + " excluded",
+        cards.put("excludeAlbums", addFilterCard(activity, container, density, theme, expandedSet, "排除相册",
+                "排除所选相册中的媒体",
+                () -> currentCriteria.albumsExclude.isEmpty() ? null : currentCriteria.albumsExclude.size() + " 项已排除",
                 (content, updateBadge) -> {
                     excludeAlbumsContentRef[0] = content;
                     excludeAlbumsBadgeRef[0] = updateBadge;
@@ -2637,34 +2637,34 @@ public class NativeToolkitDialog {
                 }));
 
         // 4. Date Interval
-        cards.put("dateInterval", addFilterCard(activity, container, density, theme, expandedSet, "Date Interval",
-                "Filter by capture or upload timestamps",
+        cards.put("dateInterval", addFilterCard(activity, container, density, theme, expandedSet, "日期区间",
+                "按拍摄或上传时间筛选",
                 () -> {
                     SimpleDateFormat badgeFmt = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
                     if (currentCriteria.lowerBoundaryDate > 0 && currentCriteria.higherBoundaryDate > 0) {
                         return badgeFmt.format(new Date(currentCriteria.lowerBoundaryDate)) + " - " + badgeFmt.format(new Date(currentCriteria.higherBoundaryDate));
                     } else if (currentCriteria.lowerBoundaryDate > 0) {
-                        return "From " + badgeFmt.format(new Date(currentCriteria.lowerBoundaryDate));
+                        return "从 " + badgeFmt.format(new Date(currentCriteria.lowerBoundaryDate));
                     } else if (currentCriteria.higherBoundaryDate > 0) {
-                        return "To " + badgeFmt.format(new Date(currentCriteria.higherBoundaryDate));
+                        return "至 " + badgeFmt.format(new Date(currentCriteria.higherBoundaryDate));
                     }
                     return null;
                 },
                 (content, updateBadge) -> {
-                    LinearLayout rowFrom = createDateTimePickerRow(activity, density, theme, "From Date & Time:", currentCriteria.lowerBoundaryDate, epochMs -> {
+                    LinearLayout rowFrom = createDateTimePickerRow(activity, density, theme, "起始日期时间：", currentCriteria.lowerBoundaryDate, epochMs -> {
                         currentCriteria.lowerBoundaryDate = epochMs;
                         updateBadge.run();
                         if (onFilterChanged != null) onFilterChanged.run();
                     });
 
-                    LinearLayout rowTo = createDateTimePickerRow(activity, density, theme, "To Date & Time:", currentCriteria.higherBoundaryDate, epochMs -> {
+                    LinearLayout rowTo = createDateTimePickerRow(activity, density, theme, "结束日期时间：", currentCriteria.higherBoundaryDate, epochMs -> {
                         currentCriteria.higherBoundaryDate = epochMs;
                         updateBadge.run();
                         if (onFilterChanged != null) onFilterChanged.run();
                     });
                     addHorizontalOrStackedInputs(activity, content, density, rowFrom, rowTo);
 
-                    RadioGroup rgInt = createRadioGroup(activity, new String[]{"Include Range", "Exclude Range"},
+                    RadioGroup rgInt = createRadioGroup(activity, new String[]{"包含该区间", "排除该区间"},
                             "include".equals(currentCriteria.intervalType) ? 0 : 1, theme, idx -> {
                                 currentCriteria.intervalType = idx == 0 ? "include" : "exclude";
                                 updateBadge.run();
@@ -2672,7 +2672,7 @@ public class NativeToolkitDialog {
                             });
                     content.addView(rgInt);
 
-                    RadioGroup rgType = createRadioGroup(activity, new String[]{"Date Taken", "Date Uploaded"},
+                    RadioGroup rgType = createRadioGroup(activity, new String[]{"拍摄日期", "上传日期"},
                             "taken".equals(currentCriteria.dateType) ? 0 : 1, theme, idx -> {
                                 currentCriteria.dateType = idx == 0 ? "taken" : "uploaded";
                                 updateBadge.run();
@@ -2682,8 +2682,8 @@ public class NativeToolkitDialog {
                 }));
 
         // 5. Filename Regex
-        cards.put("filename", addFilterCard(activity, container, density, theme, expandedSet, "Filename",
-                "Regex matching on file name",
+        cards.put("filename", addFilterCard(activity, container, density, theme, expandedSet, "文件名",
+                "对文件名做正则匹配",
                 () -> (currentCriteria.fileNameRegex != null && !currentCriteria.fileNameRegex.trim().isEmpty()) ? currentCriteria.fileNameRegex.trim() : null,
                 (content, updateBadge) -> {
                     EditText et = createFilterInput(activity, density, theme, "Regex (e.g. ^IMG_.*\\.jpg$)");
@@ -2694,7 +2694,7 @@ public class NativeToolkitDialog {
                     }, onFilterChanged));
                     content.addView(et);
 
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Include Matches", "Exclude Matches"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"包含匹配项", "排除匹配项"},
                             "include".equals(currentCriteria.fileNameMatchType) ? 0 : 1, theme, idx -> {
                                 currentCriteria.fileNameMatchType = idx == 0 ? "include" : "exclude";
                                 updateBadge.run();
@@ -2704,11 +2704,11 @@ public class NativeToolkitDialog {
                 }));
 
         // 6. Description Regex
-        cards.put("description", addFilterCard(activity, container, density, theme, expandedSet, "Description",
-                "Regex matching on caption/EXIF",
+        cards.put("description", addFilterCard(activity, container, density, theme, expandedSet, "描述",
+                "对标题/EXIF 做正则匹配",
                 () -> (currentCriteria.descriptionRegex != null && !currentCriteria.descriptionRegex.trim().isEmpty()) ? currentCriteria.descriptionRegex.trim() : null,
                 (content, updateBadge) -> {
-                    EditText et = createFilterInput(activity, density, theme, "Regex (e.g. vacation)");
+                    EditText et = createFilterInput(activity, density, theme, "正则（例如 vacation）");
                     et.setText(currentCriteria.descriptionRegex != null ? currentCriteria.descriptionRegex : "");
                     et.addTextChangedListener(new DebounceWatcher(s -> {
                         currentCriteria.descriptionRegex = s;
@@ -2716,7 +2716,7 @@ public class NativeToolkitDialog {
                     }, onFilterChanged));
                     content.addView(et);
 
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Include Matches", "Exclude Matches"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"包含匹配项", "排除匹配项"},
                             "include".equals(currentCriteria.descriptionMatchType) ? 0 : 1, theme, idx -> {
                                 currentCriteria.descriptionMatchType = idx == 0 ? "include" : "exclude";
                                 updateBadge.run();
@@ -2726,14 +2726,14 @@ public class NativeToolkitDialog {
                 }));
 
         // 7. Space (Inside filters accordion!)
-        cards.put("space", addFilterCard(activity, container, density, theme, expandedSet, "Space",
-                "Filter storage quota impact",
-                () -> currentCriteria.space == StorageScanner.SpaceFilter.CONSUMING ? "Consuming Quota" :
-                        currentCriteria.space == StorageScanner.SpaceFilter.NON_CONSUMING ? "Non-Consuming" : null,
+        cards.put("space", addFilterCard(activity, container, density, theme, expandedSet, "空间",
+                "按云端配额占用情况筛选",
+                () -> currentCriteria.space == StorageScanner.SpaceFilter.CONSUMING ? "占用配额" :
+                        currentCriteria.space == StorageScanner.SpaceFilter.NON_CONSUMING ? "不占配额" : null,
                 (content, updateBadge) -> {
                     int sel = currentCriteria.space == StorageScanner.SpaceFilter.CONSUMING ? 1 :
                             currentCriteria.space == StorageScanner.SpaceFilter.NON_CONSUMING ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Consuming Quota", "Non-Consuming (Free / 0 B)"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "占用配额", "不占配额（免费 / 0 B）"},
                             sel, theme, idx -> {
                                 currentCriteria.space = idx == 1 ? StorageScanner.SpaceFilter.CONSUMING :
                                         idx == 2 ? StorageScanner.SpaceFilter.NON_CONSUMING : StorageScanner.SpaceFilter.ANY;
@@ -2744,25 +2744,25 @@ public class NativeToolkitDialog {
                 }));
 
         // 8. Similarity
-        cards.put("similarity", addFilterCard(activity, container, density, theme, expandedSet, "Similarity",
-                "Group visually similar images via perceptual hashing",
-                () -> currentCriteria.similarityThreshold > 0 ? "Threshold " + currentCriteria.similarityThreshold : null,
+        cards.put("similarity", addFilterCard(activity, container, density, theme, expandedSet, "相似度",
+                "用感知哈希把视觉相似的图片归组",
+                () -> currentCriteria.similarityThreshold > 0 ? "阈值 " + currentCriteria.similarityThreshold : null,
                 (content, updateBadge) -> {
                     TextView tvNote = new TextView(activity);
-                    tvNote.setText("Calculates 64-bit dHash/aHash distances between thumbnails to cluster duplicates.\nTip: Filter by Size, Date or Album first to quickly cluster candidates.");
+                    tvNote.setText("通过缩略图的 64 位 dHash/aHash 距离来聚类重复项。\n提示：先用大小、日期或相册筛选一遍，可以更快缩小候选范围。");
                     tvNote.setTextSize(11.5f);
                     tvNote.setTextColor(theme.textSecondary);
                     tvNote.setPadding(0, 0, 0, (int) (6 * density));
                     content.addView(tvNote);
 
-                    EditText etThresh = createFilterInput(activity, density, theme, "Threshold (0.01 - 1.0, e.g. 0.90)");
+                    EditText etThresh = createFilterInput(activity, density, theme, "阈值（0.01 - 1.0，例如 0.90）");
                     if (currentCriteria.similarityThreshold > 0) etThresh.setText(String.valueOf(currentCriteria.similarityThreshold));
                     etThresh.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.similarityThreshold = Float.parseFloat(s); } catch (Exception e) { currentCriteria.similarityThreshold = 0; }
                         updateBadge.run();
                     }, onFilterChanged));
 
-                    EditText etH = createFilterInput(activity, density, theme, "Image Hash Size (default: 16)");
+                    EditText etH = createFilterInput(activity, density, theme, "图像哈希位数（默认 16）");
                     etH.setText(String.valueOf(currentCriteria.imageHeight));
                     etH.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.imageHeight = Integer.parseInt(s); } catch (Exception e) { currentCriteria.imageHeight = 16; }
@@ -2772,8 +2772,8 @@ public class NativeToolkitDialog {
                 }));
 
         // 9. Size
-        cards.put("size", addFilterCard(activity, container, density, theme, expandedSet, "Size",
-                "Filter by file size (bytes or e.g. 5MB, 1.5GB)",
+        cards.put("size", addFilterCard(activity, container, density, theme, expandedSet, "大小",
+                "按文件大小筛选（字节，或 5MB、1.5GB 这种写法）",
                 () -> {
                     if (currentCriteria.lowerBoundarySize > 0 && currentCriteria.higherBoundarySize > 0) {
                         return StorageScanner.formatBytes(currentCriteria.lowerBoundarySize) + " - " + StorageScanner.formatBytes(currentCriteria.higherBoundarySize);
@@ -2785,14 +2785,14 @@ public class NativeToolkitDialog {
                     return null;
                 },
                 (content, updateBadge) -> {
-                    EditText etMin = createFilterInput(activity, density, theme, "More Than (e.g. 5MB, 5000000)");
+                    EditText etMin = createFilterInput(activity, density, theme, "大于（例如 5MB、5000000）");
                     if (currentCriteria.lowerBoundarySize > 0) etMin.setText(StorageScanner.formatBytes(currentCriteria.lowerBoundarySize));
                     etMin.addTextChangedListener(new DebounceWatcher(s -> {
                         currentCriteria.lowerBoundarySize = parseBytesInput(s);
                         updateBadge.run();
                     }, onFilterChanged));
 
-                    EditText etMax = createFilterInput(activity, density, theme, "Less Than (e.g. 50MB, 50000000)");
+                    EditText etMax = createFilterInput(activity, density, theme, "小于（例如 50MB、50000000）");
                     if (currentCriteria.higherBoundarySize > 0) etMax.setText(StorageScanner.formatBytes(currentCriteria.higherBoundarySize));
                     etMax.addTextChangedListener(new DebounceWatcher(s -> {
                         currentCriteria.higherBoundarySize = parseBytesInput(s);
@@ -2802,18 +2802,18 @@ public class NativeToolkitDialog {
                 }));
 
         // 10. Resolution
-        cards.put("resolution", addFilterCard(activity, container, density, theme, expandedSet, "Resolution",
-                "Width and height in pixels",
-                () -> (currentCriteria.minWidth > 0 || currentCriteria.maxWidth > 0 || currentCriteria.minHeight > 0 || currentCriteria.maxHeight > 0) ? "Resolution set" : null,
+        cards.put("resolution", addFilterCard(activity, container, density, theme, expandedSet, "分辨率",
+                "宽高（像素）",
+                () -> (currentCriteria.minWidth > 0 || currentCriteria.maxWidth > 0 || currentCriteria.minHeight > 0 || currentCriteria.maxHeight > 0) ? "已设置分辨率" : null,
                 (content, updateBadge) -> {
-                    EditText etMinW = createFilterInput(activity, density, theme, "Min Width (px)");
+                    EditText etMinW = createFilterInput(activity, density, theme, "最小宽度（px）");
                     if (currentCriteria.minWidth > 0) etMinW.setText(String.valueOf(currentCriteria.minWidth));
                     etMinW.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.minWidth = Integer.parseInt(s); } catch (Exception e) { currentCriteria.minWidth = 0; }
                         updateBadge.run();
                     }, onFilterChanged));
 
-                    EditText etMaxW = createFilterInput(activity, density, theme, "Max Width (px)");
+                    EditText etMaxW = createFilterInput(activity, density, theme, "最大宽度（px）");
                     if (currentCriteria.maxWidth > 0) etMaxW.setText(String.valueOf(currentCriteria.maxWidth));
                     etMaxW.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.maxWidth = Integer.parseInt(s); } catch (Exception e) { currentCriteria.maxWidth = 0; }
@@ -2821,14 +2821,14 @@ public class NativeToolkitDialog {
                     }, onFilterChanged));
                     addHorizontalOrStackedInputs(activity, content, density, etMinW, etMaxW);
 
-                    EditText etMinH = createFilterInput(activity, density, theme, "Min Height (px)");
+                    EditText etMinH = createFilterInput(activity, density, theme, "最小高度（px）");
                     if (currentCriteria.minHeight > 0) etMinH.setText(String.valueOf(currentCriteria.minHeight));
                     etMinH.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.minHeight = Integer.parseInt(s); } catch (Exception e) { currentCriteria.minHeight = 0; }
                         updateBadge.run();
                     }, onFilterChanged));
 
-                    EditText etMaxH = createFilterInput(activity, density, theme, "Max Height (px)");
+                    EditText etMaxH = createFilterInput(activity, density, theme, "最大高度（px）");
                     if (currentCriteria.maxHeight > 0) etMaxH.setText(String.valueOf(currentCriteria.maxHeight));
                     etMaxH.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.maxHeight = Integer.parseInt(s); } catch (Exception e) { currentCriteria.maxHeight = 0; }
@@ -2838,18 +2838,18 @@ public class NativeToolkitDialog {
                 }));
 
         // 11. Duration
-        cards.put("duration", addFilterCard(activity, container, density, theme, expandedSet, "Duration",
-                "Video length in seconds",
-                () -> (currentCriteria.minDuration > 0 || currentCriteria.maxDuration > 0) ? "Duration set" : null,
+        cards.put("duration", addFilterCard(activity, container, density, theme, expandedSet, "时长",
+                "视频时长（秒）",
+                () -> (currentCriteria.minDuration > 0 || currentCriteria.maxDuration > 0) ? "已设置时长" : null,
                 (content, updateBadge) -> {
-                    EditText etMinD = createFilterInput(activity, density, theme, "Min Duration (s)");
+                    EditText etMinD = createFilterInput(activity, density, theme, "最短时长（秒）");
                     if (currentCriteria.minDuration > 0) etMinD.setText(String.valueOf(currentCriteria.minDuration));
                     etMinD.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.minDuration = Float.parseFloat(s); } catch (Exception e) { currentCriteria.minDuration = 0; }
                         updateBadge.run();
                     }, onFilterChanged));
 
-                    EditText etMaxD = createFilterInput(activity, density, theme, "Max Duration (s)");
+                    EditText etMaxD = createFilterInput(activity, density, theme, "最长时长（秒）");
                     if (currentCriteria.maxDuration > 0) etMaxD.setText(String.valueOf(currentCriteria.maxDuration));
                     etMaxD.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.maxDuration = Float.parseFloat(s); } catch (Exception e) { currentCriteria.maxDuration = 0; }
@@ -2859,13 +2859,13 @@ public class NativeToolkitDialog {
                 }));
 
         // 12. Quality
-        cards.put("quality", addFilterCard(activity, container, density, theme, expandedSet, "Quality",
-                "Storage saver vs original quality",
-                () -> "original".equals(currentCriteria.quality) ? "Original" :
-                        "storage-saver".equals(currentCriteria.quality) ? "Storage Saver" : null,
+        cards.put("quality", addFilterCard(activity, container, density, theme, expandedSet, "画质",
+                "存储空间节省模式或原画质",
+                () -> "original".equals(currentCriteria.quality) ? "原画质" :
+                        "storage-saver".equals(currentCriteria.quality) ? "存储空间节省模式" : null,
                 (content, updateBadge) -> {
                     int sel = "original".equals(currentCriteria.quality) ? 1 : "storage-saver".equals(currentCriteria.quality) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Original", "Storage Saver"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "原画质", "存储空间节省模式"},
                             sel, theme, idx -> {
                                 currentCriteria.quality = idx == 1 ? "original" : idx == 2 ? "storage-saver" : null;
                                 updateBadge.run();
@@ -2875,14 +2875,14 @@ public class NativeToolkitDialog {
                 }));
 
         // 13. Type
-        cards.put("type", addFilterCard(activity, container, density, theme, expandedSet, "Type",
-                "Image, video, or live photo",
-                () -> "image".equals(currentCriteria.mediaType) ? "Images" :
-                        "video".equals(currentCriteria.mediaType) ? "Videos" :
-                                "live".equals(currentCriteria.mediaType) ? "Live Photos" : null,
+        cards.put("type", addFilterCard(activity, container, density, theme, expandedSet, "类型",
+                "图片、视频或实况照片",
+                () -> "image".equals(currentCriteria.mediaType) ? "图片" :
+                        "video".equals(currentCriteria.mediaType) ? "视频" :
+                                "live".equals(currentCriteria.mediaType) ? "实况照片" : null,
                 (content, updateBadge) -> {
                     int sel = "image".equals(currentCriteria.mediaType) ? 1 : "video".equals(currentCriteria.mediaType) ? 2 : "live".equals(currentCriteria.mediaType) ? 3 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Images", "Videos", "Live Photos"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "图片", "视频", "实况照片"},
                             sel, theme, idx -> {
                                 currentCriteria.mediaType = idx == 1 ? "image" : idx == 2 ? "video" : idx == 3 ? "live" : null;
                                 Logger.printInfo(() -> "Type filter changed: idx=" + idx + ", mediaType=" + currentCriteria.mediaType);
@@ -2893,13 +2893,13 @@ public class NativeToolkitDialog {
                 }));
 
         // 14. Upload Status
-        cards.put("uploadStatus", addFilterCard(activity, container, density, theme, expandedSet, "Upload Status",
-                "Full vs partial backup",
-                () -> "full".equals(currentCriteria.uploadStatus) ? "Full" :
-                        "partial".equals(currentCriteria.uploadStatus) ? "Partial" : null,
+        cards.put("uploadStatus", addFilterCard(activity, container, density, theme, expandedSet, "上传状态",
+                "完整备份或部分备份",
+                () -> "full".equals(currentCriteria.uploadStatus) ? "完整" :
+                        "partial".equals(currentCriteria.uploadStatus) ? "部分" : null,
                 (content, updateBadge) -> {
                     int sel = "full".equals(currentCriteria.uploadStatus) ? 1 : "partial".equals(currentCriteria.uploadStatus) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Full", "Partial"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "完整", "部分"},
                             sel, theme, idx -> {
                                 currentCriteria.uploadStatus = idx == 1 ? "full" : idx == 2 ? "partial" : null;
                                 updateBadge.run();
@@ -2909,13 +2909,13 @@ public class NativeToolkitDialog {
                 }));
 
         // 15. Archived
-        cards.put("archive", addFilterCard(activity, container, density, theme, expandedSet, "Archived",
-                "Archive status",
-                () -> Boolean.TRUE.equals(currentCriteria.archived) ? "Archived" :
-                        Boolean.FALSE.equals(currentCriteria.archived) ? "Unarchived" : null,
+        cards.put("archive", addFilterCard(activity, container, density, theme, expandedSet, "已归档",
+                "归档状态",
+                () -> Boolean.TRUE.equals(currentCriteria.archived) ? "已归档" :
+                        Boolean.FALSE.equals(currentCriteria.archived) ? "未归档" : null,
                 (content, updateBadge) -> {
                     int sel = Boolean.TRUE.equals(currentCriteria.archived) ? 1 : Boolean.FALSE.equals(currentCriteria.archived) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Yes", "No"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "是", "否"},
                             sel, theme, idx -> {
                                 currentCriteria.archived = idx == 1 ? Boolean.TRUE : idx == 2 ? Boolean.FALSE : null;
                                 updateBadge.run();
@@ -2925,13 +2925,13 @@ public class NativeToolkitDialog {
                 }));
 
         // 16. Ownership
-        cards.put("owned", addFilterCard(activity, container, density, theme, expandedSet, "Ownership",
-                "Owned vs not owned",
-                () -> Boolean.TRUE.equals(currentCriteria.owned) ? "Owned" :
-                        Boolean.FALSE.equals(currentCriteria.owned) ? "Not Owned" : null,
+        cards.put("owned", addFilterCard(activity, container, density, theme, expandedSet, "归属",
+                "自己拥有或非自己拥有",
+                () -> Boolean.TRUE.equals(currentCriteria.owned) ? "自己拥有" :
+                        Boolean.FALSE.equals(currentCriteria.owned) ? "非自己拥有" : null,
                 (content, updateBadge) -> {
                     int sel = Boolean.TRUE.equals(currentCriteria.owned) ? 1 : Boolean.FALSE.equals(currentCriteria.owned) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Owned", "Not Owned"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "自己拥有", "非自己拥有"},
                             sel, theme, idx -> {
                                 currentCriteria.owned = idx == 1 ? Boolean.TRUE : idx == 2 ? Boolean.FALSE : null;
                                 updateBadge.run();
@@ -2941,14 +2941,14 @@ public class NativeToolkitDialog {
                 }));
 
         // 17. Location & Bounding Box
-        cards.put("location", addFilterCard(activity, container, density, theme, expandedSet, "Location",
-                "GPS coordinates & geographic area",
-                () -> Boolean.TRUE.equals(currentCriteria.hasLocation) ? "Has Location" :
-                        Boolean.FALSE.equals(currentCriteria.hasLocation) ? "No Location" :
-                                (currentCriteria.boundSouth != null || currentCriteria.boundNorth != null) ? "Geo Bounded" : null,
+        cards.put("location", addFilterCard(activity, container, density, theme, expandedSet, "位置",
+                "GPS 坐标与地理范围",
+                () -> Boolean.TRUE.equals(currentCriteria.hasLocation) ? "有位置" :
+                        Boolean.FALSE.equals(currentCriteria.hasLocation) ? "无位置" :
+                                (currentCriteria.boundSouth != null || currentCriteria.boundNorth != null) ? "限定地理范围" : null,
                 (content, updateBadge) -> {
                     int sel = Boolean.TRUE.equals(currentCriteria.hasLocation) ? 1 : Boolean.FALSE.equals(currentCriteria.hasLocation) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Has Location", "No Location"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "有位置", "无位置"},
                             sel, theme, idx -> {
                                 currentCriteria.hasLocation = idx == 1 ? Boolean.TRUE : idx == 2 ? Boolean.FALSE : null;
                                 updateBadge.run();
@@ -2956,14 +2956,14 @@ public class NativeToolkitDialog {
                             });
                     content.addView(rg);
 
-                    EditText etS = createFilterInput(activity, density, theme, "South Latitude (-90 to 90)");
+                    EditText etS = createFilterInput(activity, density, theme, "南纬（-90 至 90）");
                     etS.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.boundSouth = Double.parseDouble(s); } catch (Exception e) { currentCriteria.boundSouth = null; }
                         updateBadge.run();
                     }, onFilterChanged));
                     content.addView(etS);
 
-                    EditText etN = createFilterInput(activity, density, theme, "North Latitude (-90 to 90)");
+                    EditText etN = createFilterInput(activity, density, theme, "北纬（-90 至 90）");
                     etN.addTextChangedListener(new DebounceWatcher(s -> {
                         try { currentCriteria.boundNorth = Double.parseDouble(s); } catch (Exception e) { currentCriteria.boundNorth = null; }
                         updateBadge.run();
@@ -2972,13 +2972,13 @@ public class NativeToolkitDialog {
                 }));
 
         // 18. Favorite
-        cards.put("favorite", addFilterCard(activity, container, density, theme, expandedSet, "Favorite",
-                "Favorite / starred status",
-                () -> Boolean.TRUE.equals(currentCriteria.favorite) ? "Favorited" :
-                        Boolean.FALSE.equals(currentCriteria.favorite) ? "Not Favorited" : null,
+        cards.put("favorite", addFilterCard(activity, container, density, theme, expandedSet, "收藏",
+                "收藏/星标状态",
+                () -> Boolean.TRUE.equals(currentCriteria.favorite) ? "已收藏" :
+                        Boolean.FALSE.equals(currentCriteria.favorite) ? "未收藏" : null,
                 (content, updateBadge) -> {
                     int sel = Boolean.TRUE.equals(currentCriteria.favorite) ? 1 : Boolean.FALSE.equals(currentCriteria.favorite) ? 2 : 0;
-                    RadioGroup rg = createRadioGroup(activity, new String[]{"Any", "Yes", "No"},
+                    RadioGroup rg = createRadioGroup(activity, new String[]{"不限", "是", "否"},
                             sel, theme, idx -> {
                                 currentCriteria.favorite = idx == 1 ? Boolean.TRUE : idx == 2 ? Boolean.FALSE : null;
                                 updateBadge.run();
@@ -2988,12 +2988,12 @@ public class NativeToolkitDialog {
                 }));
 
         // 19. Exclude Shared Links
-        cards.put("excludeShared", addFilterCard(activity, container, density, theme, expandedSet, "Exclude Shared",
-                "Omit shared links",
-                () -> currentCriteria.excludeShared ? "Active" : null,
+        cards.put("excludeShared", addFilterCard(activity, container, density, theme, expandedSet, "排除共享",
+                "排除共享链接",
+                () -> currentCriteria.excludeShared ? "启用" : null,
                 (content, updateBadge) -> {
                     CheckBox cbShared = new CheckBox(activity);
-                    cbShared.setText("Exclude Shared Links");
+                    cbShared.setText("排除共享链接");
                     cbShared.setTextColor(theme.textPrimary);
                     cbShared.setChecked(currentCriteria.excludeShared);
                     cbShared.setOnCheckedChangeListener((b, c) -> {
@@ -3005,12 +3005,12 @@ public class NativeToolkitDialog {
                 }));
 
         // 20. Exclude Favorites
-        cards.put("excludeFavorites", addFilterCard(activity, container, density, theme, expandedSet, "Exclude Favorites",
-                "Omit favorited items",
-                () -> currentCriteria.excludeFavorites ? "Active" : null,
+        cards.put("excludeFavorites", addFilterCard(activity, container, density, theme, expandedSet, "排除收藏",
+                "排除已收藏项目",
+                () -> currentCriteria.excludeFavorites ? "启用" : null,
                 (content, updateBadge) -> {
                     CheckBox cbFav = new CheckBox(activity);
-                    cbFav.setText("Exclude Favorites");
+                    cbFav.setText("排除收藏");
                     cbFav.setTextColor(theme.textPrimary);
                     cbFav.setChecked(currentCriteria.excludeFavorites);
                     cbFav.setOnCheckedChangeListener((b, c) -> {
@@ -3022,12 +3022,12 @@ public class NativeToolkitDialog {
                 }));
 
         // 21. Sort by Size
-        cards.put("sortBySize", addFilterCard(activity, container, density, theme, expandedSet, "Sorting",
-                "Result sort order",
-                () -> currentCriteria.sortBySize ? "Sort by size" : null,
+        cards.put("sortBySize", addFilterCard(activity, container, density, theme, expandedSet, "排序",
+                "结果排序方式",
+                () -> currentCriteria.sortBySize ? "按大小排序" : null,
                 (content, updateBadge) -> {
                     CheckBox cbSort = new CheckBox(activity);
-                    cbSort.setText("Sort by size");
+                    cbSort.setText("按大小排序");
                     cbSort.setTextColor(theme.textPrimary);
                     cbSort.setChecked(currentCriteria.sortBySize);
                     cbSort.setOnCheckedChangeListener((b, c) -> {
@@ -3066,12 +3066,12 @@ public class NativeToolkitDialog {
         if (items.isEmpty()) {
             if ("toTrash".equals(actionId) && currentCriteria.source == StorageScanner.SourceType.ALBUMS && !currentCriteria.albumsInclude.isEmpty()) {
                 String param = TextUtils.join(",", currentCriteria.albumsInclude);
-                showActionConfirmDialog(activity, "Delete " + currentCriteria.albumsInclude.size() + " empty album(s)?", () -> {
+                showActionConfirmDialog(activity, "删除 " + currentCriteria.albumsInclude.size() + " 个空相册？", () -> {
                     executeDbActionAsync(activity, actionId, items, param, refreshRunner);
                 }, density, theme);
                 return;
             }
-            Toast.makeText(activity, "No matching items to perform " + actionLabel, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "没有可执行此操作的项目：" + actionLabel, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -3086,23 +3086,23 @@ public class NativeToolkitDialog {
         } else if ("removeFromAlbum".equals(actionId)) {
             String param = (currentCriteria.source == StorageScanner.SourceType.ALBUMS && !currentCriteria.albumsInclude.isEmpty())
                     ? TextUtils.join(",", currentCriteria.albumsInclude) : null;
-            showActionConfirmDialog(activity, "Remove " + items.size() + " item(s) from album?", () -> {
+            showActionConfirmDialog(activity, "从相册移出 " + items.size() + " 项？", () -> {
                 executeDbActionAsync(activity, actionId, items, param, refreshRunner);
             }, density, theme);
         } else if ("lock".equals(actionId)) {
             int count = items.size();
-            String title = (count == 1) ? "Move to Locked Folder?" : ("Move " + count + " items to Locked Folder?");
+            String title = (count == 1) ? "移入「已锁定文件夹」？" : ("移动 " + count + " 项到「已锁定文件夹」？");
             int accountId = (currentAccount != null) ? currentAccount.accountId : -1;
             boolean backupEnabled = StorageScanner.isLockedFolderBackupEnabled(activity, accountId);
             String msg = backupEnabled
-                    ? "These photos & videos will be hidden and won’t show up as you scroll through Google Photos or in other apps."
-                    : "These photos & videos will be hidden and won’t show up as you scroll through Google Photos or in other apps, and won’t be backed up.";
-            showActionConfirmDialog(activity, title, msg, "Move", () -> {
+                    ? "这些照片和视频会被隐藏，在 Google 相册或其他应用里滚动浏览时都不会显示。"
+                    : "这些照片和视频会被隐藏，在 Google 相册或其他应用里滚动浏览时都不会显示，也不会被备份。";
+            showActionConfirmDialog(activity, title, msg, "移动", () -> {
                 executeDbActionAsync(activity, actionId, items, null, refreshRunner);
             }, density, theme);
         } else if ("unLock".equals(actionId)) {
             int count = items.size();
-            String title = (count == 1) ? "Move out of Locked Folder?" : ("Move " + count + " items out of Locked Folder?");
+            String title = (count == 1) ? "移出「已锁定文件夹」？" : ("移动 " + count + " 项移出「已锁定文件夹」？");
             int accountId = (currentAccount != null) ? currentAccount.accountId : -1;
             boolean lockerBackupEnabled = StorageScanner.isLockedFolderBackupEnabled(activity, accountId);
             int localCount = 0;
@@ -3114,21 +3114,21 @@ public class NativeToolkitDialog {
             }
             StringBuilder msgBuilder = new StringBuilder();
             if (localCount == 0) {
-                msgBuilder.append("These photos & videos will be moved out of Locked Folder and will appear in your Google Photos library.");
+                msgBuilder.append("这些照片和视频会移出「已锁定文件夹」，并重新出现在 Google 相册的媒体库中。");
             } else {
-                msgBuilder.append("These photos & videos will no longer be hidden and can now show up as you scroll through Google Photos or in other apps.");
-                msgBuilder.append("\n\n⚠️ Storage Notice:\n");
+                msgBuilder.append("这些照片和视频不再隐藏，在 Google 相册或其他应用里滚动浏览时会重新显示。");
+                msgBuilder.append("\n\n⚠️ 存储提示：\n");
                 if (localCount == count) {
-                    msgBuilder.append("These items are stored locally only without cloud backup. Moving them out will place them into local device storage (under device folders, e.g. DCIM/Pictures) and will not appear in your cloud photos timeline until backed up.");
+                    msgBuilder.append("这些项目只存在本机、没有云端备份。移出后会落到本机设备文件夹（例如 DCIM/Pictures），在备份之前不会出现在云端照片时间线上。");
                 } else {
-                    msgBuilder.append(localCount).append(" of these items are stored locally only without cloud backup. Moving them out will place them into local device storage (under device folders, e.g. DCIM/Pictures) and will not appear in your cloud photos timeline until backed up.");
+                    msgBuilder.append(localCount).append(" 项只存在本机、没有云端备份。移出后会落到本机设备文件夹（例如 DCIM/Pictures），在备份之前不会出现在云端照片时间线上。");
                 }
             }
-            showActionConfirmDialog(activity, title, msgBuilder.toString(), "Move out", () -> {
+            showActionConfirmDialog(activity, title, msgBuilder.toString(), "移出", () -> {
                 executeDbActionAsync(activity, actionId, items, null, refreshRunner);
             }, density, theme);
         } else if ("setDateFromFilename".equals(actionId)) {
-            showActionConfirmDialog(activity, "Update date from filename for " + items.size() + " item(s)?", () -> {
+            showActionConfirmDialog(activity, "按文件名修改日期，共 " + items.size() + " 项？", () -> {
                 executeDbActionAsync(activity, actionId, items, null, refreshRunner);
             }, density, theme);
         } else if ("toTrash".equals(actionId)) {
@@ -3136,9 +3136,9 @@ public class NativeToolkitDialog {
             String confirmMsg;
             if (currentCriteria.source == StorageScanner.SourceType.ALBUMS && !currentCriteria.albumsInclude.isEmpty()) {
                 param = TextUtils.join(",", currentCriteria.albumsInclude);
-                confirmMsg = "Move " + items.size() + " items to Trash and delete " + currentCriteria.albumsInclude.size() + " album(s)?";
+                confirmMsg = "移动 " + items.size() + " 项到回收站，并删除 " + currentCriteria.albumsInclude.size() + " 个相册？";
             } else {
-                confirmMsg = "Move " + items.size() + " items to Trash?";
+                confirmMsg = "移动 " + items.size() + " 项到回收站？";
             }
             final String targetAlbumKeys = param;
             showActionConfirmDialog(activity, confirmMsg, () -> {
@@ -3156,20 +3156,20 @@ public class NativeToolkitDialog {
         container.setOrientation(LinearLayout.VERTICAL);
 
         String[][] actions = new String[][]{
-                {"toNewAlbum", "New Album"},
-                {"toExistingAlbum", "Add to Album"},
-                {"removeFromAlbum", "Remove from Album"},
-                {"setDateFromFilename", "Date from Name"},
-                {"toArchive", "Archive"},
-                {"unArchive", "Un-Archive"},
-                {"toFavorite", "Favorite"},
-                {"unFavorite", "Un-Favorite"},
-                {"lock", "Move to Locker"},
-                {"unLock", "Unlock"},
-                {"toTrash", "Trash"},
-                {"restoreTrash", "Restore"},
-                {"exportDcim", "Export to DCIM"},
-                {"exportMetadata", "Export Metadata (CSV)"}
+                {"toNewAlbum", "新建相册"},
+                {"toExistingAlbum", "加入相册"},
+                {"removeFromAlbum", "从相册移出"},
+                {"setDateFromFilename", "按文件名改日期"},
+                {"toArchive", "归档"},
+                {"unArchive", "取消归档"},
+                {"toFavorite", "收藏"},
+                {"unFavorite", "取消收藏"},
+                {"lock", "移入保险箱"},
+                {"unLock", "移出保险箱"},
+                {"toTrash", "回收站"},
+                {"restoreTrash", "还原"},
+                {"exportDcim", "导出到 DCIM"},
+                {"exportMetadata", "导出元数据（CSV）"}
         };
 
         boolean isLarge = PhenotypeFlagManager.isLargeScreen(activity);
@@ -3213,7 +3213,7 @@ public class NativeToolkitDialog {
                 if (btn.getAlpha() < 0.6f) {
                     // Action disabled for current source/context
                     String disabledHint = getActionDisabledHint(actionId, currentCriteria);
-                    Toast.makeText(activity, disabledHint != null ? disabledHint : "Action not applicable for current source", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, disabledHint != null ? disabledHint : "当前来源不支持该操作", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 performActionClick(activity, actionId, actionLabel, itemsProvider, refreshRunner, density, theme);
@@ -3239,29 +3239,29 @@ public class NativeToolkitDialog {
 
     private static String getActionDisabledHint(String actionId, StorageScanner.FilterCriteria crit) {
         if ("toTrash".equals(actionId)) {
-            return "Items are already in Trash";
+            return "这些项目已在回收站里";
         }
-        if ("restoreTrash".equals(actionId)) return "Source must be Trash to restore items";
+        if ("restoreTrash".equals(actionId)) return "来源必须是回收站才能还原";
         if ("toArchive".equals(actionId)) {
-            if (crit.source == StorageScanner.SourceType.LOCKED) return "Cannot archive items in Locked Folder";
-            return "Items are already archived";
+            if (crit.source == StorageScanner.SourceType.LOCKED) return "「已锁定文件夹」里的项目无法归档";
+            return "这些项目已归档";
         }
-        if ("unArchive".equals(actionId)) return "Items are not archived";
+        if ("unArchive".equals(actionId)) return "这些项目尚未归档";
         if ("toFavorite".equals(actionId)) {
-            if (crit.source == StorageScanner.SourceType.LOCKED) return "Cannot favorite items in Locked Folder";
-            return "Items are already favorited";
+            if (crit.source == StorageScanner.SourceType.LOCKED) return "「已锁定文件夹」里的项目无法收藏";
+            return "这些项目已收藏";
         }
-        if ("unFavorite".equals(actionId)) return "Items are not favorited";
-        if ("removeFromAlbum".equals(actionId)) return "Source must be Albums with an active album selected";
+        if ("unFavorite".equals(actionId)) return "这些项目尚未收藏";
+        if ("removeFromAlbum".equals(actionId)) return "来源必须是「相册」，且要先选中一个相册";
         if ("lock".equals(actionId)) {
-            if (crit.source == StorageScanner.SourceType.LOCKED) return "Items are already in Locked Folder";
-            if (crit.source == StorageScanner.SourceType.TRASH) return "Cannot move Trash items to Locked Folder";
+            if (crit.source == StorageScanner.SourceType.LOCKED) return "这些项目已在「已锁定文件夹」里";
+            if (crit.source == StorageScanner.SourceType.TRASH) return "回收站里的项目无法移入「已锁定文件夹」";
             return null;
         }
-        if ("unLock".equals(actionId)) return "Source must be Locked Folder to unlock items";
-        if ("setDateFromFilename".equals(actionId)) return "Cannot update date for items in Trash";
+        if ("unLock".equals(actionId)) return "来源必须是「已锁定文件夹」才能移出";
+        if ("setDateFromFilename".equals(actionId)) return "回收站里的项目无法修改日期";
         if ("toNewAlbum".equals(actionId) || "toExistingAlbum".equals(actionId)) {
-            if (crit.source == StorageScanner.SourceType.TRASH) return "Cannot add Trash items to albums";
+            if (crit.source == StorageScanner.SourceType.TRASH) return "回收站里的项目无法加入相册";
         }
         return null;
     }
@@ -3312,13 +3312,13 @@ public class NativeToolkitDialog {
         box.setPadding(p, p, p, (int) (14 * density));
 
         TextView tv = new TextView(activity);
-        tv.setText("Add " + items.size() + " items to New Album");
+        tv.setText("添加 " + items.size() + " 项到新相册");
         tv.setTextSize(15f);
         tv.setTextColor(theme.textPrimary);
         tv.setTypeface(null, Typeface.BOLD);
         box.addView(tv);
 
-        EditText et = createFilterInput(activity, density, theme, "Album title...");
+        EditText et = createFilterInput(activity, density, theme, "相册名称…");
         LinearLayout.LayoutParams etLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         etLp.topMargin = (int) (12 * density);
         etLp.bottomMargin = (int) (12 * density);
@@ -3330,7 +3330,7 @@ public class NativeToolkitDialog {
         btnRow.setGravity(Gravity.END);
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(13f);
         btnCancel.setTextColor(theme.primary);
         btnCancel.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
@@ -3339,7 +3339,7 @@ public class NativeToolkitDialog {
         btnRow.addView(btnCancel);
 
         TextView btnCreate = new TextView(activity);
-        btnCreate.setText("Create & Add");
+        btnCreate.setText("创建并添加");
         btnCreate.setTextSize(13f);
         btnCreate.setTypeface(null, Typeface.BOLD);
         btnCreate.setTextColor(theme.onPrimary);
@@ -3351,7 +3351,7 @@ public class NativeToolkitDialog {
         btnCreate.setOnClickListener(v -> {
             String title = et.getText() != null ? et.getText().toString().trim() : "";
             if (title.isEmpty()) {
-                Toast.makeText(activity, "Please enter an album title", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "请输入相册名称", Toast.LENGTH_SHORT).show();
                 return;
             }
             d.dismiss();
@@ -3382,14 +3382,14 @@ public class NativeToolkitDialog {
         box.setPadding(p, p, p, (int) (12 * density));
 
         TextView tv = new TextView(activity);
-        tv.setText("Select Album (" + items.size() + " items)");
+        tv.setText("选择相册（" + items.size() + " 项）");
         tv.setTextSize(15f);
         tv.setTextColor(theme.textPrimary);
         tv.setTypeface(null, Typeface.BOLD);
         tv.setPadding(0, 0, 0, (int) (8 * density));
         box.addView(tv);
 
-        EditText etSearch = createFilterInput(activity, density, theme, "Search album...");
+        EditText etSearch = createFilterInput(activity, density, theme, "搜索相册…");
         box.addView(etSearch);
 
         ScrollView sv = new ScrollView(activity);
@@ -3436,7 +3436,7 @@ public class NativeToolkitDialog {
                     }
                     if (shown == 0) {
                         TextView tvEmpty = new TextView(activity);
-                        tvEmpty.setText("No albums found.");
+                        tvEmpty.setText("没有找到相册。");
                         tvEmpty.setTextSize(12.5f);
                         tvEmpty.setTextColor(theme.textSecondary);
                         tvEmpty.setGravity(Gravity.CENTER);
@@ -3459,7 +3459,7 @@ public class NativeToolkitDialog {
         btnRow.setGravity(Gravity.END);
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(13f);
         btnCancel.setTextColor(theme.primary);
         btnCancel.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
@@ -3483,7 +3483,7 @@ public class NativeToolkitDialog {
         MAIN_HANDLER.post(() -> {
             if (sProgressBar != null) sProgressBar.setVisibility(View.VISIBLE);
             if (sTvProgressInfo != null) {
-                sTvProgressInfo.setText("Processing " + (items != null ? items.size() : 0) + " items...");
+                sTvProgressInfo.setText("正在处理 " + (items != null ? items.size() : 0) + " 项…");
                 sTvProgressInfo.setVisibility(View.VISIBLE);
             }
         });
@@ -3535,11 +3535,11 @@ public class NativeToolkitDialog {
                     fos.write(csv.getBytes(StandardCharsets.UTF_8));
                 }
                 MAIN_HANDLER.post(() -> {
-                    Toast.makeText(activity, "Saved CSV with " + items.size() + " items to Download/" + name, Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "已保存 CSV，共 " + items.size() + " 项，路径 Download/" + name, Toast.LENGTH_LONG).show();
                 });
             } catch (Throwable t) {
                 MAIN_HANDLER.post(() -> {
-                    Toast.makeText(activity, "Export failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "导出失败：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -3581,14 +3581,14 @@ public class NativeToolkitDialog {
         box.setPadding(p, p, p, (int) (14 * density));
 
         TextView tv = new TextView(activity);
-        tv.setText("Sort Results By");
+        tv.setText("排序方式");
         tv.setTextSize(15f);
         tv.setTextColor(theme.textPrimary);
         tv.setTypeface(null, Typeface.BOLD);
         box.addView(tv);
 
         TextView sub = new TextView(activity);
-        sub.setText("Choose sorting criteria for matched items:");
+        sub.setText("选择匹配项目的排序依据：");
         sub.setTextSize(11.5f);
         sub.setTextColor(theme.textSecondary);
         sub.setPadding(0, (int) (4 * density), 0, (int) (10 * density));
@@ -3806,8 +3806,8 @@ public class NativeToolkitDialog {
 
         public ExportFailure(StorageScanner.MediaItem item, String filename, String reason) {
             this.item = item;
-            this.filename = filename != null ? filename : (item != null && item.filename != null ? item.filename : "Unknown");
-            this.reason = reason != null ? reason : "Unknown error";
+            this.filename = filename != null ? filename : (item != null && item.filename != null ? item.filename : "未知");
+            this.reason = reason != null ? reason : "未知错误";
         }
     }
 
@@ -3826,15 +3826,15 @@ public class NativeToolkitDialog {
 
         // 1. Header (Title + Subtitle)
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Export Results");
+        tvTitle.setText("导出结果");
         tvTitle.setTextSize(17f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         root.addView(tvTitle);
 
         TextView tvSummary = new TextView(activity);
-        tvSummary.setText("✅ " + successCount + " exported  •  ❌ " + failures.size() + " failed"
-                + (unchangedCount > 0 ? "\n" + unchangedCount + " file(s) exported unchanged. Backing them up will re-link to the quota-using original." : ""));
+        tvSummary.setText("✅ " + successCount + " 项已导出  •  ❌ " + failures.size() + " 项失败"
+                + (unchangedCount > 0 ? "\n" + unchangedCount + " 个文件导出后无变化。重新备份会再次关联到占配额的原始文件。" : ""));
         tvSummary.setTextSize(12.5f);
         tvSummary.setTextColor(theme.textSecondary);
         tvSummary.setPadding(0, (int) (4 * density), 0, (int) (12 * density));
@@ -3866,7 +3866,7 @@ public class NativeToolkitDialog {
             itemRow.addView(tvName);
 
             TextView tvReason = new TextView(activity);
-            tvReason.setText("Error: " + f.reason);
+            tvReason.setText("错误：" + f.reason);
             tvReason.setTextSize(11.5f);
             tvReason.setTextColor(0xFFE57373); // Light red for error description
             tvReason.setPadding(0, (int) (3 * density), 0, 0);
@@ -3887,7 +3887,7 @@ public class NativeToolkitDialog {
 
         // Copy log button
         TextView btnCopy = new TextView(activity);
-        btnCopy.setText("Copy Log");
+        btnCopy.setText("复制日志");
         btnCopy.setTextSize(12f);
         btnCopy.setTypeface(null, Typeface.BOLD);
         btnCopy.setTextColor(theme.primary);
@@ -3897,20 +3897,20 @@ public class NativeToolkitDialog {
         btnCopy.setFocusable(true);
         btnCopy.setOnClickListener(v -> {
             StringBuilder sb = new StringBuilder();
-            sb.append("=== Morphe Toolkit DCIM Export Failure Report ===\n");
-            sb.append("Total Exported: ").append(successCount).append("\n");
-            sb.append("Total Failed: ").append(failures.size()).append("\n\n");
+            sb.append("=== Morphe 工具箱 DCIM 导出失败报告 ===\n");
+            sb.append("成功导出：").append(successCount).append("\n");
+            sb.append("失败数量：").append(failures.size()).append("\n\n");
             for (ExportFailure ef : failures) {
                 sb.append("• ").append(ef.filename).append("\n");
-                sb.append("  Reason: ").append(ef.reason).append("\n");
+                sb.append("  原因：").append(ef.reason).append("\n");
                 if (ef.item != null && ef.item.remoteUrl != null) {
-                    sb.append("  URL: ").append(ef.item.remoteUrl).append("\n");
+                    sb.append("  链接：").append(ef.item.remoteUrl).append("\n");
                 }
             }
             ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null) {
-                cm.setPrimaryClip(ClipData.newPlainText("Toolkit Export Errors", sb.toString()));
-                Toast.makeText(activity, "Error report copied to clipboard", Toast.LENGTH_SHORT).show();
+                cm.setPrimaryClip(ClipData.newPlainText("工具箱导出错误", sb.toString()));
+                Toast.makeText(activity, "错误报告已复制到剪贴板", Toast.LENGTH_SHORT).show();
             }
         });
         footer.addView(btnCopy);
@@ -3921,7 +3921,7 @@ public class NativeToolkitDialog {
 
         // Close button
         TextView btnClose = new TextView(activity);
-        btnClose.setText("Close");
+        btnClose.setText("关闭");
         btnClose.setTextSize(12f);
         btnClose.setTextColor(theme.textSecondary);
         btnClose.setPadding((int) (10 * density), (int) (8 * density), (int) (10 * density), (int) (8 * density));
@@ -3932,7 +3932,7 @@ public class NativeToolkitDialog {
 
         // Retry button
         TextView btnRetry = new TextView(activity);
-        btnRetry.setText("Retry Failed (" + failures.size() + ")");
+        btnRetry.setText("重试失败项（" + failures.size() + "）");
         btnRetry.setVisibility(failures.isEmpty() ? View.GONE : View.VISIBLE);
         btnRetry.setTextSize(12f);
         btnRetry.setTypeface(null, Typeface.BOLD);
@@ -3983,14 +3983,14 @@ public class NativeToolkitDialog {
         pRoot.setBackground(createRoundedDrawable(theme.surface, 20 * density));
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Exporting to DCIM");
+        tvTitle.setText("正在导出到 DCIM");
         tvTitle.setTextSize(16f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         pRoot.addView(tvTitle);
 
         TextView tvStatus = new TextView(activity);
-        tvStatus.setText("Preparing 0 / " + items.size() + "...");
+        tvStatus.setText("准备中 0 / " + items.size() + "...");
         tvStatus.setTextSize(12f);
         tvStatus.setTextColor(theme.textSecondary);
         tvStatus.setPadding(0, (int) (6 * density), 0, (int) (12 * density));
@@ -4006,7 +4006,7 @@ public class NativeToolkitDialog {
         pRoot.addView(pBar, pLp);
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(12f);
         btnCancel.setTypeface(null, Typeface.BOLD);
         btnCancel.setTextColor(theme.primary);
@@ -4015,7 +4015,7 @@ public class NativeToolkitDialog {
         final boolean[] isCancelled = new boolean[]{false};
         btnCancel.setOnClickListener(v -> {
             isCancelled[0] = true;
-            btnCancel.setText("Cancelling...");
+            btnCancel.setText("正在取消…");
         });
         pRoot.addView(btnCancel);
 
@@ -4049,14 +4049,14 @@ public class NativeToolkitDialog {
                 if (isCancelled[0]) {
                     for (int j = i; j < items.size(); j++) {
                         StorageScanner.MediaItem skippedItem = items.get(j);
-                        failures.add(new ExportFailure(skippedItem, skippedItem.filename, "Export cancelled by user"));
+                        failures.add(new ExportFailure(skippedItem, skippedItem.filename, "导出已被用户取消"));
                     }
                     break;
                 }
                 StorageScanner.MediaItem item = items.get(i);
                 final int currentIdx = i + 1;
                 MAIN_HANDLER.post(() -> {
-                    tvStatus.setText("Exporting " + currentIdx + " of " + items.size() + "\n" + (item.filename != null ? item.filename : "item"));
+                    tvStatus.setText("正在导出 " + currentIdx + " 页，共 " + items.size() + "\n" + (item.filename != null ? item.filename : "item"));
                     pBar.setProgress(currentIdx);
                 });
 
@@ -4201,8 +4201,8 @@ public class NativeToolkitDialog {
                         successCount++;
                         exportedPaths.add(destFile.getAbsolutePath());
                     } else {
-                        String err = (lastError != null ? lastError : "Source media not found or inaccessible")
-                                + (item.quotaBytes > 0 ? " (preview fallback is disabled for quota items)" : "");
+                        String err = (lastError != null ? lastError : "找不到源媒体，或无法访问")
+                                + (item.quotaBytes > 0 ? "（占配额的项目已禁用预览兜底）" : "");
                         failures.add(new ExportFailure(item, item.filename, err));
                         Logger.printInfo(() -> "Export failed for " + item.filename + ": " + err);
                     }
@@ -4227,7 +4227,7 @@ public class NativeToolkitDialog {
             MAIN_HANDLER.post(() -> {
                 if (progressDialog.isShowing()) progressDialog.dismiss();
                 if (failures.isEmpty() && unchangedPaths.isEmpty()) {
-                    String msg = "Exported " + finalSuccess + " item(s) to Pictures/GooglePhotos_Export";
+                    String msg = "已导出 " + finalSuccess + " 项到 Pictures/GooglePhotos_Export";
                     Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
                 } else {
                     showExportResultsDialog(activity, finalSuccess, unchangedPaths.size(), failures, density, theme);
@@ -4261,7 +4261,7 @@ public class NativeToolkitDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("📷 Media Inspector");
+        tvTitle.setText("📷 媒体检查器");
         tvTitle.setTextSize(16f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
@@ -4291,7 +4291,7 @@ public class NativeToolkitDialog {
 
         if (currentItem.duration > 0 || (currentItem.mimeType != null && currentItem.mimeType.contains("video"))) {
             TextView tvVid = new TextView(activity);
-            tvVid.setText("▶ " + (currentItem.duration > 0 ? (int) currentItem.duration + "s" : "Video"));
+            tvVid.setText("▶ " + (currentItem.duration > 0 ? (int) currentItem.duration + "s" : "视频"));
             tvVid.setTextSize(11f);
             tvVid.setTypeface(null, Typeface.BOLD);
             tvVid.setTextColor(Color.WHITE);
@@ -4310,28 +4310,28 @@ public class NativeToolkitDialog {
         metaCard.setPadding((int) (14 * density), (int) (12 * density), (int) (14 * density), (int) (12 * density));
 
         TextView tvFilename = new TextView(activity);
-        tvFilename.setText(currentItem.filename != null ? currentItem.filename : "Unknown");
+        tvFilename.setText(currentItem.filename != null ? currentItem.filename : "未知");
         tvFilename.setTextSize(13.5f);
         tvFilename.setTypeface(null, Typeface.BOLD);
         tvFilename.setTextColor(theme.textPrimary);
         metaCard.addView(tvFilename);
 
         String resStr = (currentItem.width > 0 && currentItem.height > 0)
-                ? (currentItem.width + " × " + currentItem.height) : "Standard resolution";
+                ? (currentItem.width + " × " + currentItem.height) : "标准分辨率";
         String quotaStr = currentItem.quotaBytes > 0
-                ? ("-" + currentItem.getFormattedQuota() + " (Consumes storage)")
-                : "Free (0 B • Storage saver / Pixel perk)";
-        String stateStr = (currentItem.isArchived ? "Archived • " : "")
-                + (currentItem.isFavorite ? "Favorite • " : "")
-                + (currentItem.trashTimestamp > 0 ? "In Trash" : "Active in Library");
+                ? ("-" + currentItem.getFormattedQuota() + "（占用存储）")
+                : "免费（0 B • 存储空间节省 / Pixel 权益）";
+        String stateStr = (currentItem.isArchived ? "已归档 • " : "")
+                + (currentItem.isFavorite ? "已收藏 • " : "")
+                + (currentItem.trashTimestamp > 0 ? "在回收站中" : "在相册库中");
 
         String[][] metaRows = new String[][]{
-                {"📐 Resolution", resStr},
-                {"📦 File Size", currentItem.getFormattedSize()},
-                {"☁️ Quota Impact", quotaStr},
-                {"📅 Date Captured", currentItem.captureTimestamp > 0 ? DATE_FORMAT.format(new Date(currentItem.captureTimestamp)) : "Unknown"},
-                {"🏷️ MIME Type", currentItem.mimeType != null && !currentItem.mimeType.isEmpty() ? currentItem.mimeType : "image/jpeg"},
-                {"📂 Media State", stateStr}
+                {"📐 分辨率", resStr},
+                {"📦 文件大小", currentItem.getFormattedSize()},
+                {"☁️ 配额占用", quotaStr},
+                {"📅 拍摄时间", currentItem.captureTimestamp > 0 ? DATE_FORMAT.format(new Date(currentItem.captureTimestamp)) : "未知"},
+                {"🏷️ MIME 类型", currentItem.mimeType != null && !currentItem.mimeType.isEmpty() ? currentItem.mimeType : "image/jpeg"},
+                {"📂 媒体状态", stateStr}
         };
 
         for (String[] row : metaRows) {
@@ -4387,14 +4387,14 @@ public class NativeToolkitDialog {
                 clusterBox.setLayoutParams(cbLp);
 
                 TextView tvClustTitle = new TextView(activity);
-                tvClustTitle.setText("Visual Similarity Cluster #" + currentItem.clusterId + " (" + clusterMembers.size() + " items)");
+                tvClustTitle.setText("视觉相似聚类 #" + currentItem.clusterId + " (" + clusterMembers.size() + " 项）");
                 tvClustTitle.setTextSize(12.5f);
                 tvClustTitle.setTypeface(null, Typeface.BOLD);
                 tvClustTitle.setTextColor(theme.primary);
                 clusterBox.addView(tvClustTitle);
 
                 TextView tvClustDesc = new TextView(activity);
-                tvClustDesc.setText("Tap any candidate to inspect details. Keep the best quality photo and delete the rest.");
+                tvClustDesc.setText("点开任意候选可看详情。保留画质最好的一张，其余删掉。");
                 tvClustDesc.setTextSize(11f);
                 tvClustDesc.setTextColor(theme.textSecondary);
                 tvClustDesc.setPadding(0, (int) (2 * density), 0, (int) (8 * density));
@@ -4435,7 +4435,7 @@ public class NativeToolkitDialog {
                     cCol.addView(tvCandSize);
 
                     TextView tvCandTag = new TextView(activity);
-                    tvCandTag.setText(isCur ? "Viewing" : "Candidate");
+                    tvCandTag.setText(isCur ? "查看中" : "候选");
                     tvCandTag.setTextSize(9f);
                     tvCandTag.setTextColor(isCur ? theme.primary : theme.textSecondary);
                     cCol.addView(tvCandTag);
@@ -4453,7 +4453,7 @@ public class NativeToolkitDialog {
 
                 // Smart action: Keep this photo
                 TextView btnKeepThis = new TextView(activity);
-                btnKeepThis.setText("🌟 Keep This Photo (Select " + (clusterMembers.size() - 1) + " Others for Deletion)");
+                btnKeepThis.setText("🌟 保留这张（选中其余 " + (clusterMembers.size() - 1) + " 张待删除）");
                 btnKeepThis.setTextSize(11.5f);
                 btnKeepThis.setTypeface(null, Typeface.BOLD);
                 btnKeepThis.setTextColor(theme.onPrimary);
@@ -4477,7 +4477,7 @@ public class NativeToolkitDialog {
                         }
                     }
                     if (onSelectionChanged != null) onSelectionChanged.run();
-                    Toast.makeText(activity, "Selected " + count + " duplicates for deletion/archive", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "已选 " + count + " 个重复项待删除/归档", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 });
                 clusterBox.addView(btnKeepThis);
@@ -4503,11 +4503,11 @@ public class NativeToolkitDialog {
         Runnable updateBtnSelectVisual = () -> {
             boolean isSel = selectedKeys.contains(itemKey);
             if (isSel) {
-                btnToggleSelect.setText("✓ Selected (Tap to Deselect)");
+                btnToggleSelect.setText("✓ 已选中（点击取消）");
                 btnToggleSelect.setTextColor(theme.onPrimary);
                 btnToggleSelect.setBackground(createActionPillDrawable(theme.primary, 10 * density));
             } else {
-                btnToggleSelect.setText("＋ Select for Batch Action");
+                btnToggleSelect.setText("＋ 选中后批量操作");
                 btnToggleSelect.setTextColor(theme.textPrimary);
                 btnToggleSelect.setBackground(createActionPillDrawable(theme.surfaceContainer, 10 * density));
             }
@@ -4528,7 +4528,7 @@ public class NativeToolkitDialog {
         footer.addView(btnToggleSelect);
 
         TextView btnDone = new TextView(activity);
-        btnDone.setText("Close");
+        btnDone.setText("关闭");
         btnDone.setTextSize(12f);
         btnDone.setTypeface(null, Typeface.BOLD);
         btnDone.setTextColor(theme.primary);
@@ -4611,7 +4611,7 @@ public class NativeToolkitDialog {
             singleRow.setPadding((int) (4 * density), (int) (2 * density), (int) (4 * density), (int) (4 * density));
 
             TextView tvInfo = new TextView(activity);
-            tvInfo.setText("Page " + (currentPageRef[0] + 1) + " of " + totalPages + " • " + (start + 1) + "–" + end + " of " + totalItems);
+            tvInfo.setText("第 " + (currentPageRef[0] + 1) + " 页，共 " + totalPages + " • " + (start + 1) + "–" + end + " 页，共 " + totalItems);
             tvInfo.setTextSize(11f);
             tvInfo.setTextColor(theme.textSecondary);
             tvInfo.setTypeface(null, Typeface.BOLD);
@@ -4621,7 +4621,7 @@ public class NativeToolkitDialog {
             singleRow.addView(spacerLeft, new LinearLayout.LayoutParams(0, 0, 1f));
 
             if (totalPages > 1) {
-                TextView btnFirst = createNavButton(activity, "⇤ First", currentPageRef[0] > 0, density, theme);
+                TextView btnFirst = createNavButton(activity, "⇤ 首页", currentPageRef[0] > 0, density, theme);
                 btnFirst.setOnClickListener(v -> {
                     if (currentPageRef[0] > 0) {
                         currentPageRef[0] = 0;
@@ -4630,7 +4630,7 @@ public class NativeToolkitDialog {
                 });
                 singleRow.addView(btnFirst);
 
-                TextView btnPrev = createNavButton(activity, "◀ Prev", currentPageRef[0] > 0, density, theme);
+                TextView btnPrev = createNavButton(activity, "◀ 上一页", currentPageRef[0] > 0, density, theme);
                 btnPrev.setOnClickListener(v -> {
                     if (currentPageRef[0] > 0) {
                         currentPageRef[0]--;
@@ -4648,7 +4648,7 @@ public class NativeToolkitDialog {
                 tvPageLabel.setPadding((int) (6 * density), 0, (int) (6 * density), 0);
                 singleRow.addView(tvPageLabel);
 
-                TextView btnNext = createNavButton(activity, "Next ▶", currentPageRef[0] < totalPages - 1, density, theme);
+                TextView btnNext = createNavButton(activity, "下一页 ▶", currentPageRef[0] < totalPages - 1, density, theme);
                 btnNext.setOnClickListener(v -> {
                     if (currentPageRef[0] < totalPages - 1) {
                         currentPageRef[0]++;
@@ -4657,7 +4657,7 @@ public class NativeToolkitDialog {
                 });
                 singleRow.addView(btnNext);
 
-                TextView btnLast = createNavButton(activity, "Last ⇥", currentPageRef[0] < totalPages - 1, density, theme);
+                TextView btnLast = createNavButton(activity, "末页 ⇥", currentPageRef[0] < totalPages - 1, density, theme);
                 btnLast.setOnClickListener(v -> {
                     if (currentPageRef[0] < totalPages - 1) {
                         currentPageRef[0] = totalPages - 1;
@@ -4670,7 +4670,7 @@ public class NativeToolkitDialog {
             View spacerRight = new View(activity);
             singleRow.addView(spacerRight, new LinearLayout.LayoutParams(0, 0, 1f));
 
-            TextView btnAll = createCanvasToolbarButton(activity, "All", theme.primary, density, theme);
+            TextView btnAll = createCanvasToolbarButton(activity, "全选", theme.primary, density, theme);
             btnAll.setOnClickListener(v -> {
                 for (StorageScanner.MediaItem it : items) {
                     selectedKeys.add(getItemKey(it));
@@ -4680,7 +4680,7 @@ public class NativeToolkitDialog {
             });
             singleRow.addView(btnAll);
 
-            TextView btnNone = createCanvasToolbarButton(activity, "None", theme.textSecondary, density, theme);
+            TextView btnNone = createCanvasToolbarButton(activity, "全不选", theme.textSecondary, density, theme);
             btnNone.setOnClickListener(v -> {
                 selectedKeys.clear();
                 if (onSelectionChanged != null) onSelectionChanged.run();
@@ -4688,7 +4688,7 @@ public class NativeToolkitDialog {
             });
             singleRow.addView(btnNone);
 
-            TextView btnInvert = createCanvasToolbarButton(activity, "Invert", theme.textSecondary, density, theme);
+            TextView btnInvert = createCanvasToolbarButton(activity, "反选", theme.textSecondary, density, theme);
             btnInvert.setOnClickListener(v -> {
                 Set<String> inverted = new HashSet<>();
                 for (StorageScanner.MediaItem it : items) {
@@ -4703,7 +4703,7 @@ public class NativeToolkitDialog {
             singleRow.addView(btnInvert);
 
             TextView btnPageSelect = new TextView(activity);
-            btnPageSelect.setText(allPageSelected ? "Clear Page (" + (end - start) + ")" : "Select Page (" + (end - start) + ")");
+            btnPageSelect.setText(allPageSelected ? "清除本页（" + (end - start) + "）" : "选中本页（" + (end - start) + "）");
             btnPageSelect.setTextSize(11f);
             btnPageSelect.setTextColor(allPageSelected ? theme.primary : theme.textPrimary);
             btnPageSelect.setTypeface(null, Typeface.BOLD);
@@ -4733,14 +4733,14 @@ public class NativeToolkitDialog {
         }
 
         // Phone: 2-row layout unchanged
-        // Row 1: Item counts and "Select Page" / "Clear Page"
+        // Row 1: Item counts and "选中本页" / "清除本页"
         LinearLayout row1 = new LinearLayout(activity);
         row1.setOrientation(LinearLayout.HORIZONTAL);
         row1.setGravity(Gravity.CENTER_VERTICAL);
         row1.setPadding((int) (2 * density), 0, (int) (2 * density), (int) (4 * density));
 
         TextView tvInfo = new TextView(activity);
-        tvInfo.setText("Page " + (currentPageRef[0] + 1) + " of " + totalPages + " • " + (start + 1) + "–" + end + " of " + totalItems);
+        tvInfo.setText("第 " + (currentPageRef[0] + 1) + " 页，共 " + totalPages + " • " + (start + 1) + "–" + end + " 页，共 " + totalItems);
         tvInfo.setTextSize(11.5f);
         tvInfo.setTextColor(theme.textSecondary);
         tvInfo.setTypeface(null, Typeface.BOLD);
@@ -4748,7 +4748,7 @@ public class NativeToolkitDialog {
         row1.addView(tvInfo, infoLp);
 
         TextView btnPageSelect = new TextView(activity);
-        btnPageSelect.setText(allPageSelected ? "Clear Page (" + (end - start) + ")" : "Select Page (" + (end - start) + ")");
+        btnPageSelect.setText(allPageSelected ? "清除本页（" + (end - start) + "）" : "选中本页（" + (end - start) + "）");
         btnPageSelect.setTextSize(11f);
         btnPageSelect.setTextColor(allPageSelected ? theme.primary : theme.textPrimary);
         btnPageSelect.setTypeface(null, Typeface.BOLD);
@@ -4779,7 +4779,7 @@ public class NativeToolkitDialog {
             row2.setPadding(0, (int) (2 * density), 0, 0);
 
             // First button
-            TextView btnFirst = createNavButton(activity, "⇤ First", currentPageRef[0] > 0, density, theme);
+            TextView btnFirst = createNavButton(activity, "⇤ 首页", currentPageRef[0] > 0, density, theme);
             btnFirst.setOnClickListener(v -> {
                 if (currentPageRef[0] > 0) {
                     currentPageRef[0] = 0;
@@ -4789,7 +4789,7 @@ public class NativeToolkitDialog {
             row2.addView(btnFirst);
 
             // Prev button
-            TextView btnPrev = createNavButton(activity, "◀ Prev", currentPageRef[0] > 0, density, theme);
+            TextView btnPrev = createNavButton(activity, "◀ 上一页", currentPageRef[0] > 0, density, theme);
             btnPrev.setOnClickListener(v -> {
                 if (currentPageRef[0] > 0) {
                     currentPageRef[0]--;
@@ -4809,7 +4809,7 @@ public class NativeToolkitDialog {
             row2.addView(tvPageLabel);
 
             // Next button
-            TextView btnNext = createNavButton(activity, "Next ▶", currentPageRef[0] < totalPages - 1, density, theme);
+            TextView btnNext = createNavButton(activity, "下一页 ▶", currentPageRef[0] < totalPages - 1, density, theme);
             btnNext.setOnClickListener(v -> {
                 if (currentPageRef[0] < totalPages - 1) {
                     currentPageRef[0]++;
@@ -4819,7 +4819,7 @@ public class NativeToolkitDialog {
             row2.addView(btnNext);
 
             // Last button
-            TextView btnLast = createNavButton(activity, "Last ⇥", currentPageRef[0] < totalPages - 1, density, theme);
+            TextView btnLast = createNavButton(activity, "末页 ⇥", currentPageRef[0] < totalPages - 1, density, theme);
             btnLast.setOnClickListener(v -> {
                 if (currentPageRef[0] < totalPages - 1) {
                     currentPageRef[0] = totalPages - 1;
@@ -4847,7 +4847,7 @@ public class NativeToolkitDialog {
         final List<StorageScanner.MediaItem> items = (rawItems != null) ? new ArrayList<>(rawItems) : new ArrayList<>();
         if (items.isEmpty()) {
             TextView tvEmpty = new TextView(activity);
-            tvEmpty.setText("No media items matched the selected filters.");
+            tvEmpty.setText("没有媒体符合当前筛选条件。");
             tvEmpty.setTextSize(13f);
             tvEmpty.setTextColor(theme.textSecondary);
             tvEmpty.setGravity(Gravity.CENTER);
@@ -4938,7 +4938,7 @@ public class NativeToolkitDialog {
                     badge.setText("-" + item.getFormattedQuota());
                     badge.setTextColor(0xFFFFB4AB);
                 } else {
-                    badge.setText("Free");
+                    badge.setText("免费");
                     badge.setTextColor(0xFF70F7E3);
                 }
                 FrameLayout.LayoutParams bLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.END);
@@ -5112,7 +5112,7 @@ public class NativeToolkitDialog {
                     badge.setTextColor(theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A);
                     badge.setBackground(createRoundedDrawable(theme.isDark ? 0xFF3E1E1E : 0xFFFFDAD6, 8 * density));
                 } else {
-                    badge.setText("Free 0B");
+                    badge.setText("可用 0B");
                     badge.setTextColor(theme.isDark ? 0xFF70F7E3 : 0xFF006A60);
                     badge.setBackground(createRoundedDrawable(theme.isDark ? 0xFF1D3E38 : 0xFFCCE8E3, 8 * density));
                 }
@@ -5980,7 +5980,7 @@ public class NativeToolkitDialog {
         SimpleDateFormat tFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
         TextView btnDate = new TextView(activity);
-        btnDate.setText(initialEpochMs > 0 ? dFmt.format(new Date(initialEpochMs)) : "Select Date");
+        btnDate.setText(initialEpochMs > 0 ? dFmt.format(new Date(initialEpochMs)) : "选择日期");
         btnDate.setTextSize(12.5f);
         btnDate.setTextColor(initialEpochMs > 0 ? theme.primary : theme.textSecondary);
         btnDate.setGravity(Gravity.CENTER);
@@ -5991,7 +5991,7 @@ public class NativeToolkitDialog {
         btnDate.setLayoutParams(dateLp);
 
         TextView btnTime = new TextView(activity);
-        btnTime.setText(initialEpochMs > 0 ? tFmt.format(new Date(initialEpochMs)) : "Select Time");
+        btnTime.setText(initialEpochMs > 0 ? tFmt.format(new Date(initialEpochMs)) : "选择时间");
         btnTime.setTextSize(12.5f);
         btnTime.setTextColor(initialEpochMs > 0 ? theme.primary : theme.textSecondary);
         btnTime.setGravity(Gravity.CENTER);
@@ -6002,7 +6002,7 @@ public class NativeToolkitDialog {
         btnTime.setLayoutParams(timeLp);
 
         TextView btnClear = new TextView(activity);
-        btnClear.setText("Clear");
+        btnClear.setText("清除");
         btnClear.setTextSize(11.5f);
         btnClear.setTextColor(theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A);
         btnClear.setGravity(Gravity.CENTER);
@@ -6037,9 +6037,9 @@ public class NativeToolkitDialog {
 
         btnClear.setOnClickListener(v -> {
             selectedTime[0] = 0;
-            btnDate.setText("Select Date");
+            btnDate.setText("选择日期");
             btnDate.setTextColor(theme.textSecondary);
-            btnTime.setText("Select Time");
+            btnTime.setText("选择时间");
             btnTime.setTextColor(theme.textSecondary);
             listener.onSelected(0);
         });
@@ -6193,7 +6193,7 @@ public class NativeToolkitDialog {
     }
 
     private static void showActionConfirmDialog(Activity activity, String msg, Runnable onConfirm, float density, Theme theme) {
-        showActionConfirmDialog(activity, null, msg, "Confirm", onConfirm, density, theme);
+        showActionConfirmDialog(activity, null, msg, "确认", onConfirm, density, theme);
     }
 
     private static void showActionConfirmDialog(Activity activity, String title, String msg, String confirmBtnText, Runnable onConfirm, float density, Theme theme) {
@@ -6232,7 +6232,7 @@ public class NativeToolkitDialog {
         btnRow.setPadding(0, (int) (16 * density), 0, 0);
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(13f);
         btnCancel.setTextColor(theme.primary);
         btnCancel.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
@@ -6241,7 +6241,7 @@ public class NativeToolkitDialog {
         btnRow.addView(btnCancel);
 
         TextView btnOk = new TextView(activity);
-        btnOk.setText(confirmBtnText != null ? confirmBtnText : "Confirm");
+        btnOk.setText(confirmBtnText != null ? confirmBtnText : "确认");
         btnOk.setTextSize(13f);
         btnOk.setTypeface(null, Typeface.BOLD);
         btnOk.setTextColor(theme.onPrimary);
@@ -6387,8 +6387,8 @@ public class NativeToolkitDialog {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 BiometricPrompt.Builder builder = new BiometricPrompt.Builder(activity)
-                        .setTitle("Locked Folder")
-                        .setDescription("Authenticate to view private media in Locked Folder");
+                        .setTitle("已锁定文件夹")
+                        .setDescription("验证后才能查看「已锁定文件夹」里的私有媒体");
 
                 java.util.concurrent.Executor executor = r -> MAIN_HANDLER.post(r);
 
@@ -6400,7 +6400,7 @@ public class NativeToolkitDialog {
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     builder.setDeviceCredentialAllowed(true);
                 } else {
-                    builder.setNegativeButton("Cancel", executor, (d, w) -> {
+                    builder.setNegativeButton("取消", executor, (d, w) -> {
                         if (onCancelled != null) onCancelled.run();
                     });
                 }
@@ -6430,7 +6430,7 @@ public class NativeToolkitDialog {
                 return;
             }
         } catch (Throwable t) {
-            Logger.printException(() -> "Biometric authentication error", t);
+            Logger.printException(() -> "生物识别验证出错", t);
         }
 
         if (onSuccess != null) onSuccess.run();

@@ -64,22 +64,22 @@ public final class FloatingTabBarHelper {
     public static String getModeDisplayName(Context context) {
         String mode = getCurrentMode(context);
         if (MODE_COMPACT.equalsIgnoreCase(mode)) {
-            return "Compact (Modern UI) • Unselected tabs as icons";
+            return "紧凑（现代界面）• 未选中标签显示为图标";
         } else if (MODE_ICON_ONLY.equalsIgnoreCase(mode)) {
-            return "Minimal (Icon Only) • All tabs as icons";
+            return "极简（仅图标）• 所有标签显示为图标";
         } else {
-            return "Stock (Expanded) • Classic text labels";
+            return "原版（展开）• 经典文字标签";
         }
     }
 
     public static String getModeChipName(Context context) {
         String mode = getCurrentMode(context);
         if (MODE_COMPACT.equalsIgnoreCase(mode)) {
-            return "Compact";
+            return "紧凑";
         } else if (MODE_ICON_ONLY.equalsIgnoreCase(mode)) {
-            return "Minimal";
+            return "极简";
         } else {
-            return "Stock";
+            return "原版";
         }
     }
 

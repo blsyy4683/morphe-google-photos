@@ -228,7 +228,7 @@ public class LocalCreationDownloader {
                         if (intent != null && ACTION_CLEAR_SAVED_MEMORIES.equals(intent.getAction())) {
                             clearSavedRegistry(ctx);
                             MAIN_HANDLER.post(() -> {
-                                Toast.makeText(ctx, "Morphe: Saved memories registry reset", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ctx, "Morphe：回忆保存记录已重置", Toast.LENGTH_SHORT).show();
                             });
                         }
                     }
@@ -344,12 +344,12 @@ public class LocalCreationDownloader {
                         notifySaveListeners(saveCreationMixin, mediaList);
                         notifyStoryUi(saveCreationMixin);
                         if (appContext != null) {
-                            Toast.makeText(appContext, "Saved creation to Google Photos", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "创作已保存到 Google 相册", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Log.w(TAG, "Failed to resolve local stream for creation item(s).");
                         if (appContext != null) {
-                            Toast.makeText(appContext, "Failed to save creation", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "保存创作失败", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -423,7 +423,7 @@ public class LocalCreationDownloader {
                     MAIN_HANDLER.post(() -> {
                         if (success) {
                             recordCardSaved(id);
-                            Toast.makeText(appContext, "Saved creation to Google Photos", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "创作已保存到 Google 相册", Toast.LENGTH_SHORT).show();
                             Log.i(TAG, "Successfully exported MFY creation " + id + " to DCIM/Google Photos.");
                             if (pres != null) {
                                 updateMfyCardTileState(pres, id, true, false);
@@ -440,7 +440,7 @@ public class LocalCreationDownloader {
                                 updateMfySaveStatus(mfyMixin, id, null);
                             }, 700);
                         } else {
-                            Toast.makeText(appContext, "Failed to save creation", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "保存创作失败", Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "Failed exporting MFY creation " + id);
                             if (pres != null) {
                                 updateMfyCardTileState(pres, id, null, false);
@@ -1233,7 +1233,7 @@ public class LocalCreationDownloader {
     }
 
     /**
-     * Called when the user taps "Save" on a Create Tab hero card (Lqlb->n / Lqno->n / Lskw->n).
+     * Called when the user taps "保存" on a Create Tab hero card (Lqlb->n / Lqno->n / Lskw->n).
      * Marks the card ID as saved immediately and dispatches background export to DCIM/Google Photos.
      */
     public static void onCreateHeroSaveRequested(Object presenter, Object wsf) {
@@ -1386,10 +1386,10 @@ public class LocalCreationDownloader {
                                 Method lMethod = presenter.getClass().getMethod("l", boolean.class);
                                 lMethod.invoke(presenter, false);
                             } catch (Throwable ignored) {}
-                            Toast.makeText(appContext, "Saved creation to Google Photos", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "创作已保存到 Google 相册", Toast.LENGTH_SHORT).show();
                             Log.i(TAG, "Successfully exported hero card creation to DCIM/Google Photos and updated UI to Saved.");
                         } else {
-                            Toast.makeText(appContext, "Failed to save creation", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext, "保存创作失败", Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "Failed to download hero card creation locally.");
                         }
                     });

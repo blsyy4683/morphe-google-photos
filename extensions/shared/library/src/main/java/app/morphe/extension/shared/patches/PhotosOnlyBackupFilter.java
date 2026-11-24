@@ -6,12 +6,12 @@ import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
 
 /**
- * "Upload photos only" filter for automatic backup.
+ * "仅上传照片" filter for automatic backup.
  * <p>
  * Google Photos has no setting to back up photos without also backing up videos:
  * the master backup toggle uploads everything in the selected device folders.
  * When this filter is enabled (Morphe Settings -&gt; Backup &amp; Storage -&gt;
- * "Upload photos only"), the backup queue query built by the app
+ * "仅上传照片"), the backup queue query built by the app
  * (Luiz.g, the same builder the DCIM &amp; backup control patch hooks) gets an
  * additional media-type exclusion appended to its WHERE clause, so video items
  * are never selected for automatic upload. Photos keep flowing through the

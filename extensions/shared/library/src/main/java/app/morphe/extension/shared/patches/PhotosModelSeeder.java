@@ -455,7 +455,7 @@ public final class PhotosModelSeeder {
                     isSeeded = true;
                     Logger.printInfo(() -> "PhotosModelSeeder: All " + finalDownloaded + " models downloaded and seeded.");
                 } else {
-                    Logger.printInfo(() -> "PhotosModelSeeder: Downloaded " + finalDownloaded + " of " + total + " models.");
+                    Logger.printInfo(() -> "PhotosModelSeeder: Downloaded " + finalDownloaded + " 页，共 " + total + " models.");
                 }
 
             } catch (Throwable t) {
@@ -743,7 +743,7 @@ public final class PhotosModelSeeder {
                     try (FileOutputStream fos = new FileOutputStream(xml)) {
                         fos.write(sb.toString().getBytes("UTF-8"));
                     }
-                    Logger.printInfo(() -> "PhotosModelSeeder: Successfully patched manifest " + xml.getName() + " for " + newPackageName + " (" + deduplicated.size() + " entries)");
+                    Logger.printInfo(() -> "PhotosModelSeeder: Successfully patched manifest " + xml.getName() + "，已用 " + newPackageName + " (" + deduplicated.size() + " entries)");
                 }
             } catch (Exception e) {
                 Logger.printInfo(() -> "PhotosModelSeeder: Failed to patch manifest " + xml.getName() + ": " + e.getMessage());
@@ -991,14 +991,14 @@ public final class PhotosModelSeeder {
 
         // Header
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("🤖 On-Device AI Models");
+        tvTitle.setText("🤖 端侧 AI 模型");
         tvTitle.setTextSize(18f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(textPrimary);
         root.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Cryptographic Health & Integrity Manager");
+        tvSub.setText("模型完整性与健康管理");
         tvSub.setTextSize(12f);
         tvSub.setTextColor(textSecondary);
         tvSub.setPadding(0, (int) (2 * density), 0, (int) (12 * density));
@@ -1023,19 +1023,19 @@ public final class PhotosModelSeeder {
         tvStatus.setTextSize(14f);
         tvStatus.setTypeface(null, Typeface.BOLD);
         if (currentCount >= expectedTotal && expectedTotal > 0 && !hasZero) {
-            tvStatus.setText("🟢 " + currentCount + " / " + expectedTotal + " Models Installed (Healthy)");
+            tvStatus.setText("🟢 " + currentCount + " / " + expectedTotal + " 个模型已安装（状态正常）");
             tvStatus.setTextColor(successColor);
         } else if (hasZero) {
-            tvStatus.setText("🔴 Corrupted or truncated models detected!");
+            tvStatus.setText("🔴 检测到损坏或不完整的模型！");
             tvStatus.setTextColor(errorColor);
         } else {
-            tvStatus.setText("🟡 " + currentCount + " / " + expectedTotal + " Models Cached (Incomplete)");
+            tvStatus.setText("🟡 " + currentCount + " / " + expectedTotal + " 个模型已缓存（不完整）");
             tvStatus.setTextColor(warningColor);
         }
         sumCard.addView(tvStatus);
 
         TextView tvHealthDetail = new TextView(activity);
-        tvHealthDetail.setText("SHA-1 integrity verification backed by authentic Google MDD manifests.");
+        tvHealthDetail.setText("基于 Google 官方 MDD 清单做 SHA-1 完整性校验。");
         tvHealthDetail.setTextSize(11.5f);
         tvHealthDetail.setTextColor(textSecondary);
         tvHealthDetail.setPadding(0, (int) (4 * density), 0, (int) (8 * density));
@@ -1043,7 +1043,7 @@ public final class PhotosModelSeeder {
 
         // Health Action Pill inside Card
         TextView btnHealthCheck = new TextView(activity);
-        btnHealthCheck.setText("🩺 Run Health Check & Self-Repair");
+        btnHealthCheck.setText("🩺 运行健康检查与自动修复");
         btnHealthCheck.setTextSize(12.5f);
         btnHealthCheck.setTypeface(null, Typeface.BOLD);
         btnHealthCheck.setTextColor(0xFFFFFFFF);
@@ -1126,10 +1126,10 @@ public final class PhotosModelSeeder {
 
                 TextView gSub = new TextView(activity);
                 if (corruptedCount > 0) {
-                    gSub.setText("⚠️ " + corruptedCount + " corrupted file" + (corruptedCount > 1 ? "s" : "") + " (" + healthyCount + "/" + entries.size() + " verified)");
+                    gSub.setText("⚠️ " + corruptedCount + " 个文件损坏" + (corruptedCount > 1 ? "s" : "") + " (" + healthyCount + "/" + entries.size() + " 个已校验）");
                     gSub.setTextColor(errorColor);
                 } else {
-                    gSub.setText(healthyCount + " of " + entries.size() + " files verified healthy");
+                    gSub.setText(healthyCount + " 页，共 " + entries.size() + " 个文件校验正常");
                     gSub.setTextColor(textSecondary);
                 }
                 gSub.setTextSize(11f);
@@ -1144,52 +1144,52 @@ public final class PhotosModelSeeder {
                 bBg.setCornerRadius(8 * density);
 
                 if (corruptedCount > 0) {
-                    badge.setText("⚠️ Fix");
+                    badge.setText("⚠️ 修复");
                     badge.setTextColor(0xFFFFFFFF);
                     bBg.setColor(errorColor);
                     badge.setClickable(true);
                     badge.setFocusable(true);
                     badge.setOnClickListener(v -> {
-                        badge.setText("Repairing...");
+                        badge.setText("正在修复…");
                         badge.setClickable(false);
                         new Thread(() -> {
                             boolean success = downloadGroup(activity, groupName);
                             activity.runOnUiThread(() -> {
                                 int newCount = countModelsInDir(modelsDir);
-                                tvStatus.setText((newCount >= expectedTotal ? "🟢 " : "🟡 ") + newCount + " / " + expectedTotal + " Models Installed");
+                                tvStatus.setText((newCount >= expectedTotal ? "🟢 " : "🟡 ") + newCount + " / " + expectedTotal + " 个模型已安装");
                                 tvStatus.setTextColor(newCount >= expectedTotal ? successColor : 0xFFE5A50A);
                                 if (success) {
-                                    Toast.makeText(activity, "Repaired group: " + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "已修复分组：" + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(activity, "Failed to repair some models for " + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "部分模型修复失败：" + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
                                 }
                                 refreshGroups[0].run();
                             });
                         }).start();
                     });
                 } else if (healthyCount >= entries.size() && !entries.isEmpty()) {
-                    badge.setText("✓ Healthy");
+                    badge.setText("✓ 正常");
                     badge.setTextColor(0xFFFFFFFF);
                     bBg.setColor(successColor);
                 } else {
-                    badge.setText("⬇ Download");
+                    badge.setText("⬇ 下载");
                     badge.setTextColor(0xFFFFFFFF);
                     bBg.setColor(primaryColor);
                     badge.setClickable(true);
                     badge.setFocusable(true);
                     badge.setOnClickListener(v -> {
-                        badge.setText("Downloading...");
+                        badge.setText("正在下载…");
                         badge.setClickable(false);
                         new Thread(() -> {
                             boolean success = downloadGroup(activity, groupName);
                             activity.runOnUiThread(() -> {
                                 int newCount = countModelsInDir(modelsDir);
-                                tvStatus.setText((newCount >= expectedTotal ? "🟢 " : "🟡 ") + newCount + " / " + expectedTotal + " Models Installed");
+                                tvStatus.setText((newCount >= expectedTotal ? "🟢 " : "🟡 ") + newCount + " / " + expectedTotal + " 个模型已安装");
                                 tvStatus.setTextColor(newCount >= expectedTotal ? successColor : 0xFFE5A50A);
                                 if (success) {
-                                    Toast.makeText(activity, "Installed group: " + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "已安装分组：" + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(activity, "Failed to download some models for " + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "部分模型下载失败：" + formatGroupName(groupName), Toast.LENGTH_SHORT).show();
                                 }
                                 refreshGroups[0].run();
                             });
@@ -1208,7 +1208,7 @@ public final class PhotosModelSeeder {
         // Wire Health Check & Repair Action
         btnHealthCheck.setOnClickListener(v -> {
             btnHealthCheck.setEnabled(false);
-            btnHealthCheck.setText("Verifying integrity...");
+            btnHealthCheck.setText("正在校验完整性…");
 
             repairAllModelsAsync(activity, new HealthRepairCallback() {
                 @Override
@@ -1222,15 +1222,15 @@ public final class PhotosModelSeeder {
                 public void onComplete(ModelHealthReport finalReport) {
                     activity.runOnUiThread(() -> {
                         btnHealthCheck.setEnabled(true);
-                        btnHealthCheck.setText("✓ Integrity Verified");
+                        btnHealthCheck.setText("✓ 完整性已校验");
                         if (finalReport != null && finalReport.isAllHealthy()) {
-                            tvStatus.setText("🟢 All " + finalReport.totalExpected + " Models Verified Healthy");
+                            tvStatus.setText("🟢 全部 " + finalReport.totalExpected + " 个模型校验正常");
                             tvStatus.setTextColor(successColor);
-                            Toast.makeText(activity, "✅ All on-device AI models passed integrity check!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "✅ 所有端侧 AI 模型都通过了完整性校验！", Toast.LENGTH_LONG).show();
                         } else {
                             int healthy = finalReport != null ? finalReport.healthyCount : 0;
                             int total = finalReport != null ? finalReport.totalExpected : expectedTotal;
-                            tvStatus.setText("🟢 " + healthy + " / " + total + " Models Verified Healthy");
+                            tvStatus.setText("🟢 " + healthy + " / " + total + " 个模型校验正常");
                             tvStatus.setTextColor(successColor);
                         }
                         refreshGroups[0].run();
@@ -1245,7 +1245,7 @@ public final class PhotosModelSeeder {
         btnRow.setGravity(Gravity.END);
 
         TextView btnClose = new TextView(activity);
-        btnClose.setText("Close");
+        btnClose.setText("关闭");
         btnClose.setTextSize(13f);
         btnClose.setTextColor(textPrimary);
         btnClose.setTypeface(null, Typeface.BOLD);
@@ -1254,7 +1254,7 @@ public final class PhotosModelSeeder {
         btnRow.addView(btnClose);
 
         TextView btnDownloadAll = new TextView(activity);
-        btnDownloadAll.setText("Verify & Seed All");
+        btnDownloadAll.setText("校验并预置全部");
         btnDownloadAll.setTextSize(13f);
         btnDownloadAll.setTypeface(null, Typeface.BOLD);
         btnDownloadAll.setTextColor(0xFFFFFFFF);
@@ -1264,10 +1264,10 @@ public final class PhotosModelSeeder {
         btnDownloadAll.setBackground(dlBg);
         btnDownloadAll.setPadding((int) (16 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
         btnDownloadAll.setOnClickListener(v -> {
-            btnDownloadAll.setText("Healing models in background...");
+            btnDownloadAll.setText("正在后台修复模型…");
             btnDownloadAll.setEnabled(false);
             enableAndEnsureSeeded(activity);
-            Toast.makeText(activity, "Started background verification and download for all AI models", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "已开始后台校验并下载全部 AI 模型", Toast.LENGTH_LONG).show();
             dialog.dismiss();
         });
         btnRow.addView(btnDownloadAll);

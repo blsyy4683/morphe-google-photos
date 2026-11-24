@@ -62,10 +62,10 @@ public class StorageScanner {
         LIBRARY("Library"),
         SEARCH("Search"),
         ALBUMS("Albums"),
-        SHARED("Shared"),
-        FAVORITES("Favorites"),
-        TRASH("Trash"),
-        LOCKED("Locked Folder");
+        SHARED("共享"),
+        FAVORITES("收藏"),
+        TRASH("回收站"),
+        LOCKED("已锁定文件夹");
 
         public final String displayName;
         SourceType(String displayName) {
@@ -79,9 +79,9 @@ public class StorageScanner {
     }
 
     public enum SpaceFilter {
-        ANY("Any"),
-        CONSUMING("Consuming"),
-        NON_CONSUMING("Non-Consuming");
+        ANY("不限"),
+        CONSUMING("占用配额"),
+        NON_CONSUMING("不占配额");
 
         public final String label;
         SpaceFilter(String label) {
@@ -253,7 +253,7 @@ public class StorageScanner {
                          String mimeType, double latitude, double longitude, String caption) {
             this.dedupKey = dedupKey;
             this.mediaKey = mediaKey;
-            this.filename = filename != null ? filename : "Unknown";
+            this.filename = filename != null ? filename : "未知";
             this.sizeBytes = sizeBytes;
             this.quotaBytes = quotaBytes;
             this.captureTimestamp = captureTimestamp;
@@ -1475,11 +1475,11 @@ public class StorageScanner {
         String createdKey = null;
         int totalAdded = 0;
         try {
-            Logger.printInfo(() -> "Creating native cloud album: '" + title + "' for account " + accountId + " with " + (mediaKeys != null ? mediaKeys.size() : 0) + " items");
+            Logger.printInfo(() -> "Creating native cloud album: '" + title + "' for account " + accountId + " with " + (mediaKeys != null ? mediaKeys.size() : 0) + " 项");
 
             // Method 1 (Primary): Create private personal album with title & media items via AddMediaToAlbumTask (single RPC!)
             try {
-                Logger.printInfo(() -> "Attempting Method 1: AddMediaToAlbumTask for private album '" + title + "' with " + (mediaKeys != null ? mediaKeys.size() : 0) + " items");
+                Logger.printInfo(() -> "Attempting Method 1: AddMediaToAlbumTask for private album '" + title + "' with " + (mediaKeys != null ? mediaKeys.size() : 0) + " 项");
                 Class<?> builderClass = resolveAddMediaToAlbumBuilderClass();
                 if (builderClass == null) {
                     throw new ClassNotFoundException("Could not find AddMediaToAlbumTask builder class");
@@ -2503,7 +2503,7 @@ public class StorageScanner {
             }
         }
 
-        Log.i("morphe: StorageScanner", "Loaded " + result.size() + " core media items for " + items.size() + " requested items");
+        Log.i("morphe: StorageScanner", "已加载 " + result.size() + " core media items for " + items.size() + " requested items");
         return result;
     }
 
@@ -2595,7 +2595,7 @@ public class StorageScanner {
 
     private static boolean executeOnlineTrashTask(Context context, int accountId, List<MediaItem> items) {
         if (context == null || items == null || items.isEmpty()) return false;
-        Log.i("morphe: StorageScanner", "executeOnlineTrashTask: starting for " + items.size() + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineTrashTask: starting for " + items.size() + " 项");
 
         int chunkSize = 100;
         int totalChunks = (items.size() + chunkSize - 1) / chunkSize;
@@ -2994,7 +2994,7 @@ public class StorageScanner {
 
     private static boolean executeOnlineRestoreTask(Context context, int accountId, List<MediaItem> items) {
         if (context == null || items == null || items.isEmpty()) return false;
-        Log.i("morphe: StorageScanner", "executeOnlineRestoreTask: starting for " + items.size() + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineRestoreTask: starting for " + items.size() + " 项");
 
         int chunkSize = 100;
         int totalChunks = (items.size() + chunkSize - 1) / chunkSize;
@@ -3070,7 +3070,7 @@ public class StorageScanner {
                     Log.w("morphe: StorageScanner", "RestoreActionTask chunk " + chunkIndex + ": 0 core items loaded");
                 }
             } catch (Throwable t) {
-                Log.w("morphe: StorageScanner", "RestoreActionTask chunk " + chunkIndex + " failed", t);
+                Log.w("morphe: StorageScanner", "RestoreActionTask chunk " + chunkIndex + " 项失败", t);
             }
 
             if (chunkSuccess) successCount++;
@@ -3315,7 +3315,7 @@ public class StorageScanner {
 
     private static boolean executeOnlineMarsMoveTask(Context context, int accountId, List<MediaItem> items) {
         if (context == null || items == null || items.isEmpty()) return false;
-        Log.i("morphe: StorageScanner", "executeOnlineMarsMoveTask: starting for " + items.size() + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineMarsMoveTask: starting for " + items.size() + " 项");
 
         int chunkSize = 5;
         int totalChunks = (items.size() + chunkSize - 1) / chunkSize;
@@ -3329,7 +3329,7 @@ public class StorageScanner {
 
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Encrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, items.size()) + " of " + items.size() + ")...");
+                cb.accept("Encrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, items.size()) + " 页，共 " + items.size() + ")...");
             }
 
             try {
@@ -3394,7 +3394,7 @@ public class StorageScanner {
             if (chunkSuccess) successCount++;
         }
 
-        Log.i("morphe: StorageScanner", "executeOnlineMarsMoveTask finished: " + successCount + "/" + totalChunks + " chunks successful, moved " + totalMovedCount + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineMarsMoveTask finished: " + successCount + "/" + totalChunks + " chunks successful, moved " + totalMovedCount + " 项");
         return totalMovedCount > 0;
     }
 
@@ -3417,11 +3417,11 @@ public class StorageScanner {
         sPendingUnlockAccountId = -1;
         sPendingUnlockCallback = null;
 
-        Log.i("morphe: StorageScanner", "onMarsGridActivityCreated: starting auto-unlock for " + itemsToUnlock.size() + " items");
+        Log.i("morphe: StorageScanner", "onMarsGridActivityCreated: starting auto-unlock for " + itemsToUnlock.size() + " 项");
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (activity.isFinishing() || activity.isDestroyed()) return;
-            Toast.makeText(activity, "Unlocking " + itemsToUnlock.size() + " item(s) from Locked Folder...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "正在解锁 " + itemsToUnlock.size() + " 项从「已锁定文件夹」移出…", Toast.LENGTH_SHORT).show();
 
             new Thread(() -> {
                 boolean ok = false;
@@ -3432,7 +3432,7 @@ public class StorageScanner {
                 }
                 final boolean finalOk = ok;
                 activity.runOnUiThread(() -> {
-                    Toast.makeText(activity, finalOk ? "Successfully unlocked " + itemsToUnlock.size() + " item(s)!" : "Failed to unlock items.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, finalOk ? "已成功解锁 " + itemsToUnlock.size() + " 项！" : "解锁失败。", Toast.LENGTH_SHORT).show();
                     triggerOnlineSync(activity, accountId);
                     notifyUiChanges(activity, accountId);
                     if (onDoneCallback != null) onDoneCallback.run();
@@ -3497,7 +3497,7 @@ public class StorageScanner {
 
     private static boolean executeOnlineMarsRemoveTask(Context context, int accountId, List<MediaItem> items) {
         if (context == null || items == null || items.isEmpty()) return false;
-        Log.i("morphe: StorageScanner", "executeOnlineMarsRemoveTask: starting for " + items.size() + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineMarsRemoveTask: starting for " + items.size() + " 项");
 
         List<?> allCoreMedia = loadDirectMarsMedia(context, accountId, items);
         if (allCoreMedia == null || allCoreMedia.isEmpty()) {
@@ -3505,7 +3505,7 @@ public class StorageScanner {
         }
 
         if (allCoreMedia == null || allCoreMedia.isEmpty()) {
-            Log.w("morphe: StorageScanner", "executeOnlineMarsRemoveTask: could not load core media for " + items.size() + " items");
+            Log.w("morphe: StorageScanner", "executeOnlineMarsRemoveTask: could not load core media for " + items.size() + " 项");
             return false;
         }
 
@@ -3525,7 +3525,7 @@ public class StorageScanner {
 
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Decrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, totalItems) + " of " + totalItems + ")...");
+                cb.accept("Decrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, totalItems) + " 页，共 " + totalItems + ")...");
             }
 
             try {
@@ -3800,7 +3800,7 @@ public class StorageScanner {
             }
         }
 
-        Log.i("morphe: StorageScanner", "executeOnlineMarsRemoveTask finished: " + successCount + "/" + totalChunks + " chunks successful, removed " + totalRemovedCount + " items");
+        Log.i("morphe: StorageScanner", "executeOnlineMarsRemoveTask finished: " + successCount + "/" + totalChunks + " chunks successful, removed " + totalRemovedCount + " 项");
         return successCount > 0;
     }
 
@@ -4376,7 +4376,7 @@ public class StorageScanner {
         if (updatedCount == 0 && skippedCount > 0) {
             return new ActionResult(false, 0, "No parseable timestamps found in filenames (" + skippedCount + " skipped)");
         }
-        return new ActionResult(true, updatedCount, "Successfully updated dates for " + updatedCount + " items" + (skippedCount > 0 ? " (" + skippedCount + " skipped)" : ""));
+        return new ActionResult(true, updatedCount, "Successfully updated dates for " + updatedCount + " 项" + (skippedCount > 0 ? " (" + skippedCount + " skipped)" : ""));
     }
 
     private static void triggerOnlineSync(Context context, int accountId) {
@@ -4475,7 +4475,7 @@ public class StorageScanner {
 
         // Native Cloud Album handling (runs via Google Photos TaskRunner and syncs to cloud)
         if ("toNewAlbum".equals(actionId)) {
-            String newAlbumName = param != null && !param.trim().isEmpty() ? param.trim() : "New Album";
+            String newAlbumName = param != null && !param.trim().isEmpty() ? param.trim() : "新建相册";
             List<String> mediaKeys = resolveRemoteMediaKeys(account, items);
             int[] outAdded = new int[1];
             String cloudAlbumKey = createNativeCloudAlbum(context, account.accountId, newAlbumName, mediaKeys, outAdded);
@@ -4486,7 +4486,7 @@ public class StorageScanner {
             if (mediaKeys.isEmpty() && items != null && !items.isEmpty()) {
                 return new ActionResult(true, count, "Created album '" + newAlbumName + "'. Note: Selected local item(s) must be backed up to cloud before adding to album.");
             }
-            return new ActionResult(true, count, "Successfully created album '" + newAlbumName + "' with " + count + " items");
+            return new ActionResult(true, count, "Successfully created album '" + newAlbumName + "' with " + count + " 项");
         }
 
         if ("toExistingAlbum".equals(actionId)) {
@@ -4534,7 +4534,7 @@ public class StorageScanner {
         if ("unLock".equals(actionId)) {
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Unlocking " + ((items != null) ? items.size() : 0) + " items from Locked Folder...");
+                cb.accept("正在解锁 " + ((items != null) ? items.size() : 0) + " items from Locked Folder...");
             }
             boolean ok = executeOnlineMarsRemoveTask(context, account.accountId, items);
             Logger.printInfo(() -> "executeOnlineMarsRemoveTask result: " + ok);
@@ -4817,7 +4817,7 @@ public class StorageScanner {
                     triggerOnlineSync(context, account.accountId);
                     notifyUiChanges(context, account.accountId);
 
-                    return new ActionResult(true, count, "Successfully archived " + count + " items");
+                    return new ActionResult(true, count, "Successfully archived " + count + " 项");
 
                 case "unArchive":
                     boolean hasRemoteUnarchiveOrigin = hasColumn(db, "remote_media", "last_archive_origin");
@@ -4929,7 +4929,7 @@ public class StorageScanner {
                     triggerOnlineSync(context, account.accountId);
                     notifyUiChanges(context, account.accountId);
 
-                    return new ActionResult(true, count, "Successfully un-archived " + count + " items");
+                    return new ActionResult(true, count, "Successfully un-archived " + count + " 项");
 
                 case "toFavorite":
                     boolean hasRemoteFavMediaKey = hasColumn(db, "remote_media", "media_key");
@@ -5046,7 +5046,7 @@ public class StorageScanner {
             if (db != null && db.inTransaction()) {
                 try { db.endTransaction(); } catch (Throwable ignored) {}
             }
-            return new ActionResult(false, 0, "Error: " + t.getMessage());
+            return new ActionResult(false, 0, "错误：" + t.getMessage());
         } finally {
             if (db != null) {
                 try { db.close(); } catch (Throwable ignored) {}
