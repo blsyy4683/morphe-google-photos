@@ -455,7 +455,7 @@ public final class PhotosModelSeeder {
                     isSeeded = true;
                     Logger.printInfo(() -> "PhotosModelSeeder: All " + finalDownloaded + " models downloaded and seeded.");
                 } else {
-                    Logger.printInfo(() -> "PhotosModelSeeder: Downloaded " + finalDownloaded + " 页，共 " + total + " models.");
+                    Logger.printInfo(() -> "PhotosModelSeeder: Downloaded " + finalDownloaded + " of " + total + " models.");
                 }
 
             } catch (Throwable t) {
@@ -743,7 +743,7 @@ public final class PhotosModelSeeder {
                     try (FileOutputStream fos = new FileOutputStream(xml)) {
                         fos.write(sb.toString().getBytes("UTF-8"));
                     }
-                    Logger.printInfo(() -> "PhotosModelSeeder: Successfully patched manifest " + xml.getName() + "，已用 " + newPackageName + " (" + deduplicated.size() + " entries)");
+                    Logger.printInfo(() -> "PhotosModelSeeder: Successfully patched manifest " + xml.getName() + " for " + newPackageName + " (" + deduplicated.size() + " entries)");
                 }
             } catch (Exception e) {
                 Logger.printInfo(() -> "PhotosModelSeeder: Failed to patch manifest " + xml.getName() + ": " + e.getMessage());

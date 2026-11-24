@@ -1475,11 +1475,11 @@ public class StorageScanner {
         String createdKey = null;
         int totalAdded = 0;
         try {
-            Logger.printInfo(() -> "Creating native cloud album: '" + title + "' for account " + accountId + " with " + (mediaKeys != null ? mediaKeys.size() : 0) + " 项");
+            Logger.printInfo(() -> "Creating native cloud album: '" + title + "' for account " + accountId + " with " + (mediaKeys != null ? mediaKeys.size() : 0) + " items");
 
             // Method 1 (Primary): Create private personal album with title & media items via AddMediaToAlbumTask (single RPC!)
             try {
-                Logger.printInfo(() -> "Attempting Method 1: AddMediaToAlbumTask for private album '" + title + "' with " + (mediaKeys != null ? mediaKeys.size() : 0) + " 项");
+                Logger.printInfo(() -> "Attempting Method 1: AddMediaToAlbumTask for private album '" + title + "' with " + (mediaKeys != null ? mediaKeys.size() : 0) + " items");
                 Class<?> builderClass = resolveAddMediaToAlbumBuilderClass();
                 if (builderClass == null) {
                     throw new ClassNotFoundException("Could not find AddMediaToAlbumTask builder class");

@@ -128,7 +128,7 @@ public final class CdnAssetDownloader {
 
                     int responseCode = conn.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
-                        String redirectUrl = conn.getHeaderField("位置");
+                        String redirectUrl = conn.getHeaderField("Location");
                         if (redirectUrl != null && !redirectUrl.isEmpty()) {
                             conn.disconnect();
                             url = new URL(redirectUrl);
@@ -173,7 +173,7 @@ public final class CdnAssetDownloader {
                         // Verify integrity against Content-Length if provided
                         if (expectedLength > 0 && totalBytesRead != expectedLength) {
                             final long finalBytesRead = totalBytesRead;
-                            Logger.printInfo(() -> TAG + ": Incomplete download for " + destFile.getName() + " (read " + finalBytesRead + " 页，共 " + expectedLength + " bytes). Retrying...");
+                            Logger.printInfo(() -> TAG + ": Incomplete download for " + destFile.getName() + " (read " + finalBytesRead + " of " + expectedLength + " bytes). Retrying...");
                             tempFile.delete();
                             Thread.sleep(1500);
                             continue;
@@ -217,7 +217,7 @@ public final class CdnAssetDownloader {
                     // DNS failures need a long wait — the router drop typically lasts 30-90s.
                     // Generic errors only need a short backoff.
                     boolean isDnsFailure = (t instanceof UnknownHostException)
-                            || (t.getMessage() != null && t.getMessage().contains("域名无法解析（网络或 DNS 异常）"));
+                            || (t.getMessage() != null && t.getMessage().contains("No address associated with hostname"));
                     long waitMs = isDnsFailure ? DNS_BACKOFF_MS : (NET_BACKOFF_MS * attempt);
                     if (isDnsFailure) {
                         Logger.printInfo(() -> TAG + ": DNS failure detected, waiting " + (waitMs / 1000) + "s before retry...");

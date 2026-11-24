@@ -6430,7 +6430,7 @@ public class NativeToolkitDialog {
                 return;
             }
         } catch (Throwable t) {
-            Logger.printException(() -> "生物识别验证出错", t);
+            Logger.printException(() -> "Biometric authentication error", t);
         }
 
         if (onSuccess != null) onSuccess.run();
