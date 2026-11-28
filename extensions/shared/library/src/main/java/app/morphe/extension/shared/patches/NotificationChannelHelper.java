@@ -66,7 +66,7 @@ public final class NotificationChannelHelper {
                 // 2. Register Channels
                 // Primary backup progress channel (critical for UIDT UserInitiatedBackupJobService)
                 createChannel(nm, "backup_1_progress",
-                    getResString(context, "photos_notificationchannels_backup_progress_channel", "Backup"),
+                    getResString(context, "photos_notificationchannels_backup_progress_channel", "备份状态"),
                     NotificationManager.IMPORTANCE_LOW, "assistant", false);
 
                 // Backup suggestions channel
@@ -86,7 +86,7 @@ public final class NotificationChannelHelper {
 
                 // Restore channel
                 createChannel(nm, "restore",
-                    getResString(context, "photos_notificationchannels_restore_channel", "Restore"),
+                    getResString(context, "photos_notificationchannels_restore_channel", "还原"),
                     NotificationManager.IMPORTANCE_LOW, null, false);
 
                 // Creations channel

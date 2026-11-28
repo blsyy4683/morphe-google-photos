@@ -645,7 +645,7 @@ public final class SessionLogManager {
 
         StringBuilder sb = new StringBuilder(headerSb);
         if (maxLines > 0 && matchedLines.size() > maxLines) {
-            sb.append("\n[... Displaying latest ").append(maxLines).append(" of ").append(matchedLines.size()).append(" matching lines. Export file for complete history ...]\n\n");
+            sb.append("\n[... Displaying latest ").append(maxLines).append(" 页，共 ").append(matchedLines.size()).append(" matching lines. Export file for complete history ...]\n\n");
             int startIndex = matchedLines.size() - maxLines;
             for (int i = startIndex; i < matchedLines.size(); i++) {
                 sb.append(matchedLines.get(i)).append("\n");
@@ -676,7 +676,7 @@ public final class SessionLogManager {
         } else if (q != null) {
             return "\"" + q + "\"";
         } else {
-            return "All";
+            return "全选";
         }
     }
 
@@ -770,7 +770,7 @@ public final class SessionLogManager {
             return resultUri;
         } catch (Throwable t) {
             Log.e(TAG, "Failed exporting session to file", t);
-            MAIN_HANDLER.post(() -> Toast.makeText(context, "Export failed: " + t.getMessage(), Toast.LENGTH_SHORT).show());
+            MAIN_HANDLER.post(() -> Toast.makeText(context, "导出失败：" + t.getMessage(), Toast.LENGTH_SHORT).show());
             return null;
         }
     }
@@ -789,7 +789,7 @@ public final class SessionLogManager {
                         Intent sendIntent = new Intent(Intent.ACTION_SEND);
                         sendIntent.setType(asMarkdown ? "text/markdown" : "text/plain");
                         boolean isFiltered = (levelFilter != null && !levelFilter.equalsIgnoreCase("ALL")) || (filterQuery != null && !filterQuery.trim().isEmpty());
-                        String subject = "Morphe Photos Diagnostics (" + session.id + (isFiltered ? " - " + getFilterDescription(levelFilter, filterQuery) : "") + ")";
+                        String subject = "Morphe 照片诊断 (" + session.id + (isFiltered ? " - " + getFilterDescription(levelFilter, filterQuery) : "") + ")";
                         sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                         if (fileUri != null) {
                             sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
@@ -798,9 +798,9 @@ public final class SessionLogManager {
                             String raw = readSessionContent(session, filterQuery, levelFilter, 0);
                             sendIntent.putExtra(Intent.EXTRA_TEXT, asMarkdown ? formatGitHubReport(session, raw, filterQuery, levelFilter) : raw);
                         }
-                        activity.startActivity(Intent.createChooser(sendIntent, "Share Diagnostics Log"));
+                        activity.startActivity(Intent.createChooser(sendIntent, "分享诊断日志"));
                     } catch (Throwable t) {
-                        Toast.makeText(activity, "Failed to share: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "分享失败：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (Throwable t) {
@@ -822,16 +822,16 @@ public final class SessionLogManager {
                 try {
                     ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                     if (cm != null) {
-                        ClipData clip = ClipData.newPlainText("Morphe GitHub Diagnostics", markdown);
+                        ClipData clip = ClipData.newPlainText("Morphe GitHub 诊断", markdown);
                         cm.setPrimaryClip(clip);
                         boolean isFiltered = (levelFilter != null && !levelFilter.equalsIgnoreCase("ALL")) || (filterQuery != null && !filterQuery.trim().isEmpty());
                         String msg = isFiltered
-                                ? "✓ Copied Filtered GitHub Markdown (" + getFilterDescription(levelFilter, filterQuery) + ")"
+                                ? "✓ 复制过滤的 GitHub Markdown (" + getFilterDescription(levelFilter, filterQuery) + ")"
                                 : "✓ Copied GitHub Markdown (pre-formatted with <details>)";
                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                     }
                 } catch (Throwable t) {
-                    Toast.makeText(context, "Failed to copy: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "复制失败：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });

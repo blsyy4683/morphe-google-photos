@@ -61,33 +61,33 @@ public final class PhotoFlagsRegistry {
     public static final Map<String, String> CATEGORY_TRIGGERS = new LinkedHashMap<>();
 
     static {
-        CATEGORY_TRIGGERS.put("🤖 Gemini & Ask Photos Search", "⚡ Triggers: Natural language photo search, conversational query engine & Gemini sparkle");
-        CATEGORY_TRIGGERS.put("🪄 AI Photo & Video Editor Tools", "⚡ Triggers: Magic Editor lasso selection, AI Enhance V2 & Bluejay AI backend");
-        CATEGORY_TRIGGERS.put("🎞️ Create Tab: Motion & Animation", "⚡ Triggers: Animation tool card, burst loop generator & motion photo stabilizer pill");
-        CATEGORY_TRIGGERS.put("🧭 Modern Navigation & Filters", "⚡ Triggers: \"On this device\" media filter pill & local photo isolation");
-        CATEGORY_TRIGGERS.put("⭕ OneGoogle: Subscriber Avatar Rings", "⚡ Triggers: Modern Blue Gemini Aura subscriber ring around avatar");
+        CATEGORY_TRIGGERS.put("🤖 Gemini 与 Ask Photos 搜索", "⚡ 触发：自然语言照片搜索、对话式查询引擎与 Gemini 星光效果");
+        CATEGORY_TRIGGERS.put("🪄 AI 照片与视频编辑工具", "⚡ 触发：魔术编辑器套索选择、AI Enhance V2 与 Bluejay AI 后端");
+        CATEGORY_TRIGGERS.put("🎞️ 创建页：动效与动画", "⚡ 触发：动画工具卡、连拍循环生成与动态照片防抖浮标");
+        CATEGORY_TRIGGERS.put("🧭 现代导航与筛选", "⚡ 触发：「本机」媒体筛选按钮与本机照片隔离");
+        CATEGORY_TRIGGERS.put("⭕ OneGoogle：订阅者头像光环", "⚡ 触发：头像外的蓝色 Gemini 光环");
         initFlags();
     }
 
     private static void initFlags() {
         // 🤖 Gemini & Ask Photos Search (2 Flags)
-        register("3013", "Gemini Search UI & Sparkle Indicator", "Enables modern Gemini AI search interface and interactive sparkle highlights (1 = Modern fluid expand).", "🤖 Gemini & Ask Photos Search", "Gemini UI & Sparkle Physics", FlagType.LONG, 1L);
-        register("45724258", "Ask Photos AI Natural Language Search", "Ask natural conversational questions to find specific photos and memories.", "🤖 Gemini & Ask Photos Search", "Ask Photos AI Search", FlagType.BOOLEAN, Boolean.TRUE);
+        register("3013", "Gemini 搜索界面与星光标志", "启用现代 Gemini AI 搜索界面与可交互星光高亮（1 = 现代流体展开）。", "🤖 Gemini 与 Ask Photos 搜索", "Gemini 界面与星光动效", FlagType.LONG, 1L);
+        register("45724258", "Ask Photos AI 自然语言搜索", "用自然对话的方式提问，查找特定照片与回忆。", "🤖 Gemini 与 Ask Photos 搜索", "Ask Photos AI 搜索", FlagType.BOOLEAN, Boolean.TRUE);
 
         // 🪄 AI Photo & Video Editor Tools (3 Flags)
-        register("45683689", "AI Enhance V2", "Multi-stage neural network image enhancement for exposure, HDR, and detail.", "🪄 AI Photo & Video Editor Tools", "AI Neural Photo Enhance", FlagType.BOOLEAN, Boolean.TRUE);
-        register("45705305", "Magic Editor Gesture Lasso Selection", "Circle-to-select and tap-to-select object recognition inside Magic Editor.", "🪄 AI Photo & Video Editor Tools", "Magic Editor Object Lasso", FlagType.BOOLEAN, Boolean.TRUE);
-        register("45753336", "Bluejay AI Model V3", "Forces Bluejay AI model version 3 backend with caching for video generation.", "🪄 AI Photo & Video Editor Tools", "Bluejay V3 Backend", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45683689", "AI 增强 V2", "多级神经网络画质增强，改善曝光、HDR 与细节。", "🪄 AI 照片与视频编辑工具", "AI 神经网络照片增强", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45705305", "魔术编辑器手势套索选择", "在魔术编辑器里圈选或点选即可识别对象。", "🪄 AI 照片与视频编辑工具", "魔术编辑器对象套索", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45753336", "Bluejay AI 模型 V3", "强制使用带缓存的 Bluejay AI 模型 V3 后端来生成视频。", "🪄 AI 照片与视频编辑工具", "Bluejay V3 后端", FlagType.BOOLEAN, Boolean.TRUE);
 
         // 🎞️ Create Tab: Motion & Animation (2 Flags)
-        register("4311", "Motion Photo Stabilizer & Floating Pill", "Controls floating playback pill and motion video stabilization in viewer.", "🎞️ Create Tab: Motion & Animation", "Motion Photo Playback Pill", FlagType.BOOLEAN, Boolean.TRUE);
-        register("45694311", "Motion Photo Frame Extractor", "Extracts stabilized frames from motion photos for animated GIF loops.", "🎞️ Create Tab: Motion & Animation", "Tool 7: Animation Card", FlagType.BOOLEAN, Boolean.TRUE);
+        register("4311", "动态照片防抖与悬浮播放条", "控制查看器里的悬浮播放条与动态视频防抖。", "🎞️ 创建页：动效与动画", "动态照片播放条", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45694311", "动态照片抽帧", "从动态照片中提取稳定帧，用于 GIF 循环动图。", "🎞️ 创建页：动效与动画", "工具 7：动画卡片", FlagType.BOOLEAN, Boolean.TRUE);
 
         // 🧭 Modern Navigation & Filters (1 Flag)
-        register("45753590", "On This Device Filter Pill", "Adds top-bar filter button to isolate and display only photos physically stored on the device.", "🧭 Modern Navigation & Filters", "Local Media Filter", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45753590", "「本机」筛选按钮", "在顶栏新增筛选按钮，只显示确实存在本机上的照片。", "🧭 现代导航与筛选", "本机媒体筛选", FlagType.BOOLEAN, Boolean.TRUE);
 
         // ⭕ OneGoogle: Subscriber Avatar Rings (1 Flag)
-        register("45781251", "Google One Blue Aura Ring (Gemini Style)", "Enables the modern blue gradient aura ring for Google One instead of the classic 4-color multi-color ring.", "⭕ OneGoogle: Subscriber Avatar Rings", "Google One Blue Ring", FlagType.BOOLEAN, Boolean.TRUE);
+        register("45781251", "Google One 蓝色光环（Gemini 风格）", "把 Google One 的经典四色环换成现代蓝色渐变光环。", "⭕ OneGoogle：订阅者头像光环", "Google One 蓝环", FlagType.BOOLEAN, Boolean.TRUE);
     }
 
     private static void register(String key, String title, String description, String category, String triggerTarget, FlagType type, Object defaultValue) {
@@ -98,7 +98,7 @@ public final class PhotoFlagsRegistry {
 
     public static String getCategoryTriggerDescription(String category) {
         String trig = CATEGORY_TRIGGERS.get(category);
-        return trig != null ? trig : "Controls features and parameters in this subsystem";
+        return trig != null ? trig : "控制该子系统内的功能与参数";
     }
 
     public static List<String> getCategories() {

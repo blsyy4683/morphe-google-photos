@@ -133,7 +133,7 @@ public class Utils {
                 versionName = getPackageInfo().versionName;
             } catch (Exception ex) {
                 Logger.printException(() -> "Failed to get package info", ex);
-                versionName = "Unknown";
+                versionName = "未知";
             }
         }
 
@@ -147,7 +147,7 @@ public class Utils {
                 applicationLabel = (String) applicationInfo.loadLabel(context.getPackageManager());
             } catch (Exception ex) {
                 Logger.printException(() -> "Failed to get application name", ex);
-                applicationLabel = "Unknown";
+                applicationLabel = "未知";
             }
         }
 
@@ -429,7 +429,7 @@ public class Utils {
             root.setPadding(pad, pad, pad, (int) (18 * density));
 
             android.widget.TextView tvTitle = new android.widget.TextView(activity);
-            tvTitle.setText("⚠️ Crash Recovery");
+            tvTitle.setText("⚠️ 崩溃恢复");
             tvTitle.setTextSize(18f);
             tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
             tvTitle.setTextColor(textColor);
@@ -437,9 +437,9 @@ public class Utils {
 
             String crashSummary = app.morphe.extension.shared.diagnostics.SessionLogManager.getLastCrashSummary();
             android.widget.TextView tvMsg = new android.widget.TextView(activity);
-            String msg = "Google Photos recovered from a crash in the previous session."
+            String msg = "Google 相册已从上次的崩溃中恢复。"
                     + (crashSummary != null && !crashSummary.isEmpty() ? "\n\n" + crashSummary : "")
-                    + "\n\nWould you like to inspect or export the crash log?";
+                    + "\n\n要查看或导出崩溃日志吗？";
             tvMsg.setText(msg);
             tvMsg.setTextSize(13.5f);
             tvMsg.setTextColor(subColor);
@@ -454,7 +454,7 @@ public class Utils {
             actions.setGravity(android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL);
 
             android.widget.TextView btnDismiss = new android.widget.TextView(activity);
-            btnDismiss.setText("Dismiss");
+            btnDismiss.setText("忽略");
             btnDismiss.setTextSize(14f);
             btnDismiss.setTypeface(null, android.graphics.Typeface.BOLD);
             btnDismiss.setTextColor(subColor);
@@ -469,7 +469,7 @@ public class Utils {
             actions.addView(btnDismiss, dismissLp);
 
             android.widget.TextView btnView = new android.widget.TextView(activity);
-            btnView.setText("View & Export");
+            btnView.setText("查看并导出");
             btnView.setTextSize(14f);
             btnView.setTypeface(null, android.graphics.Typeface.BOLD);
             btnView.setTextColor(isDark ? 0xFF003258 : 0xFFFFFFFF);
@@ -501,7 +501,7 @@ public class Utils {
             }
             d.show();
         } catch (Throwable t) {
-            Toast.makeText(activity, "⚠️ Photos recovered from a crash. Check Diagnostics in Settings.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "⚠️ 相册已从上次崩溃中恢复。可到设置里的「诊断」查看详情。", Toast.LENGTH_LONG).show();
         }
     }
 
