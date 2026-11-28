@@ -1504,7 +1504,7 @@ public final class PhenotypeFlagManager {
             if (!customKeysSet.isEmpty()) {
                 List<String> sortedKeys = new ArrayList<>(customKeysSet);
                 Collections.sort(sortedKeys);
-                String headerTitle = "Custom Flags (" + sortedKeys.size() + ")";
+                String headerTitle = "自定义开关（" + sortedKeys.size() + ")";
                 customItems.add(new DisplayItem(headerTitle));
                 for (String k : sortedKeys) {
                     Object v = sanitizeValue(k, all.get(k));
@@ -1540,21 +1540,21 @@ public final class PhenotypeFlagManager {
                     prefs.edit().putBoolean("_presets_loaded", true).apply();
                     GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                     reloadData();
-                    Toast.makeText(activity, "Loaded " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " Morphe presets!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "已加载 " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " 个 Morphe 预设！", Toast.LENGTH_SHORT).show();
                 });
-                tvSub.setText("0 Flags Configured");
+                tvSub.setText("尚未配置开关");
             } else if (!currentFilterQuery.isEmpty() && totalMatched == 0) {
                 emptyContainer.setVisibility(View.VISIBLE);
                 renderEmptyMessage(activity, emptyContainer, "No flags matched \"" + currentFilterQuery + "\"", density, theme);
-                tvSub.setText("0 Flags Matched (" + totalFlagsCount + " Total)");
+                tvSub.setText("匹配到 0 个（" + totalFlagsCount + " 个总数）");
             } else {
                 emptyContainer.setVisibility(View.GONE);
                 if (selectedTab == TAB_CUSTOM) {
-                    tvSub.setText(customKeysSet.size() + " Custom Flags");
+                    tvSub.setText(customKeysSet.size() + " 个自定义开关");
                 } else if (currentFilterQuery.isEmpty()) {
-                    tvSub.setText(totalFlagsCount + " Flags Configured");
+                    tvSub.setText(totalFlagsCount + " 个开关已配置");
                 } else {
-                    tvSub.setText(totalMatched + " Found (" + totalFlagsCount + " Total)");
+                    tvSub.setText(totalMatched + " 个匹配（" + totalFlagsCount + " 个总数）");
                 }
             }
         }
@@ -1638,7 +1638,7 @@ public final class PhenotypeFlagManager {
 
         private void appendSectionToRows(DisplayItem header, List<DisplayItem> section) {
             displayedRows.add(new DisplayRow(header, null));
-            boolean isExpanded = (header.headerTitle != null && header.headerTitle.startsWith("Custom Flags"))
+            boolean isExpanded = (header.headerTitle != null && header.headerTitle.startsWith("自定义开关"))
                     || (currentFilterQuery.isEmpty()
                         ? expandedCategories.contains(header.headerTitle)
                         : !searchCollapsedCategories.contains(header.headerTitle));
@@ -1666,18 +1666,18 @@ public final class PhenotypeFlagManager {
             layout.setPadding(mPad, (int) (4 * density), mPad, (int) (12 * density));
 
             TextView tvMsg = new TextView(activity);
-            tvMsg.setText("Are you sure you want to remove all " + customKeysSet.size() + " custom flags?\n\nCurated Morphe flags will remain intact.");
+            tvMsg.setText("确定要移除全部 " + customKeysSet.size() + " 个自定义开关吗？\n\nMorphe 精选开关会保持不动。");
             tvMsg.setTextSize(13);
             tvMsg.setTextColor(theme.textPrimary);
             tvMsg.setLineSpacing(0, 1.25f);
             layout.addView(tvMsg);
 
-            createM3ActionDialog(activity, "Clear All Custom Flags?", layout, "Clear all", () -> {
+            createM3ActionDialog(activity, "清空全部自定义开关？", layout, "全部清空", () -> {
                 PhenotypeSeedData.restoreOfficialFlags(activity, prefs, customKeysSet);
                 prefs.edit().remove(CUSTOM_FLAGS_KEY).apply();
                 selectedTab = TAB_CURATED;
                 reloadData();
-                Toast.makeText(activity, "Reverted custom flags to official baseline", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "自定义开关已恢复为官方默认值", Toast.LENGTH_SHORT).show();
             }, true).show();
         }
 
@@ -1690,19 +1690,19 @@ public final class PhenotypeFlagManager {
             layout.setPadding(mPad, (int) (4 * density), mPad, (int) (12 * density));
 
             TextView tvMsg = new TextView(activity);
-            tvMsg.setText("Are you sure you want to delete custom override \"" + key + "\"?\n\nIt will revert to the official baseline value.");
+            tvMsg.setText("确定要删除自定义覆盖「" + key + "」吗？\n\n删除后会恢复为官方默认值。");
             tvMsg.setTextSize(13);
             tvMsg.setTextColor(theme.textPrimary);
             tvMsg.setLineSpacing(0, 1.25f);
             layout.addView(tvMsg);
 
-            createM3ActionDialog(activity, "Delete Custom Flag?", layout, "Delete", () -> {
+            createM3ActionDialog(activity, "删除自定义开关？", layout, "删除", () -> {
                 PhenotypeSeedData.restoreOfficialFlags(activity, prefs, Collections.singleton(key));
                 Set<String> set = new HashSet<>(prefs.getStringSet(CUSTOM_FLAGS_KEY, Collections.emptySet()));
                 set.remove(key);
                 prefs.edit().putStringSet(CUSTOM_FLAGS_KEY, set).apply();
                 reloadData();
-                Toast.makeText(activity, "Reverted to official baseline: " + key, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "已恢复为官方默认值：" + key, Toast.LENGTH_SHORT).show();
             }, true).show();
         }
 
@@ -1784,13 +1784,13 @@ public final class PhenotypeFlagManager {
                 hHolder.tvTrigger.setTextColor(theme.textSecondary);
 
                 // Handle Custom Flags Header (with Clear All button)
-                if (item.headerTitle != null && item.headerTitle.startsWith("Custom Flags")) {
-                    hHolder.tvTitle.setText("Custom Flags (" + customKeysSet.size() + ")");
+                if (item.headerTitle != null && item.headerTitle.startsWith("自定义开关")) {
+                    hHolder.tvTitle.setText("自定义开关（" + customKeysSet.size() + ")");
                     hHolder.tvBadge.setVisibility(View.GONE);
                     hHolder.ivChevron.setVisibility(View.GONE);
                     hHolder.tvTrigger.setVisibility(View.GONE);
                     hHolder.btnToggleAll.setVisibility(View.VISIBLE);
-                    hHolder.btnToggleAll.setText("Clear All");
+                    hHolder.btnToggleAll.setText("全部清空");
                     hHolder.btnToggleAll.setTextColor(theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A);
                     hHolder.btnToggleAll.setBackground(createRoundedDrawable(theme.isDark ? 0xFF3E1E1E : 0xFFFFDAD6, 10 * density));
                     hHolder.btnToggleAll.setOnClickListener(v -> clearAllCustomFlagsDialog());
@@ -1874,11 +1874,11 @@ public final class PhenotypeFlagManager {
                     hHolder.btnToggleAll.setVisibility(View.VISIBLE);
                     boolean allEnabled = enabledInCat == totalInCat;
                     if (allEnabled) {
-                        hHolder.btnToggleAll.setText("Disable all");
+                        hHolder.btnToggleAll.setText("全部关闭");
                         hHolder.btnToggleAll.setTextColor(theme.disableAllText);
                         hHolder.btnToggleAll.setBackground(createRoundedDrawable(theme.disableAllBg, 10 * density));
                     } else {
-                        hHolder.btnToggleAll.setText("Enable all");
+                        hHolder.btnToggleAll.setText("全部开启");
                         hHolder.btnToggleAll.setTextColor(theme.enableAllText);
                         hHolder.btnToggleAll.setBackground(createRoundedDrawable(theme.enableAllBg, 10 * density));
                     }
@@ -1900,7 +1900,7 @@ public final class PhenotypeFlagManager {
                         edit.apply();
                         GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                         reloadData();
-                        Toast.makeText(activity, (targetState ? "Enabled " : "Disabled ") + totalInCat + " flags in " + cat, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, (targetState ? "已开启 " : "已关闭 ") + totalInCat + " 个开关，用时 " + cat, Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     hHolder.btnToggleAll.setVisibility(View.GONE);
@@ -2060,7 +2060,7 @@ public final class PhenotypeFlagManager {
                 holder.tvTitle.setText(item.curatedFlag.title);
                 holder.tvDesc.setVisibility(View.VISIBLE);
                 holder.tvDesc.setText(item.curatedFlag.description);
-                holder.tvKey.setText("ID: " + item.curatedFlag.key + " • " + item.curatedFlag.type + ": " + item.value);
+                holder.tvKey.setText("ID：" + item.curatedFlag.key + " • " + item.curatedFlag.type + ": " + item.value);
                 holder.btnDelete.setVisibility(View.GONE);
             } else {
                 holder.tvTitle.setText(item.customKey);
@@ -2068,7 +2068,7 @@ public final class PhenotypeFlagManager {
                 String typeLabel = (item.value instanceof Boolean) ? "Boolean"
                         : (item.value instanceof Float || item.value instanceof Double) ? "Float"
                         : (item.value instanceof Number) ? "Long" : "String";
-                holder.tvKey.setText(typeLabel + " • Value: " + item.value);
+                holder.tvKey.setText(typeLabel + " • 值：" + item.value);
                 holder.btnDelete.setVisibility(View.VISIBLE);
                 holder.btnDelete.setImageDrawable(new MaterialVectorDrawable(MaterialVectorDrawable.TYPE_DELETE, theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A));
                 holder.btnDelete.setOnClickListener(v -> deleteSingleCustomFlagDialog(item.getKey()));
@@ -2100,7 +2100,7 @@ public final class PhenotypeFlagManager {
                     }
                     updateSubtitleText();
                     notifyDataSetChanged();
-                    Toast.makeText(activity, "Updated: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "更新时间：" + item.getTitle(), Toast.LENGTH_SHORT).show();
                 };
 
                 holder.swToggle.setOnClickListener(toggleAction);
@@ -2274,7 +2274,7 @@ public final class PhenotypeFlagManager {
         titleCol.setLayoutParams(titleLp);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Photos Flags");
+        tvTitle.setText("相册开关");
         tvTitle.setTextSize(17.5f);
         tvTitle.setTextColor(theme.textPrimary);
         tvTitle.setTypeface(null, Typeface.BOLD);
@@ -2287,7 +2287,7 @@ public final class PhenotypeFlagManager {
         titleCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Loading flags...");
+        tvSub.setText("正在加载开关…");
         tvSub.setTextSize(11.5f);
         tvSub.setTextColor(theme.textSecondary);
         titleCol.addView(tvSub);
@@ -2330,7 +2330,7 @@ public final class PhenotypeFlagManager {
         inputWrapper.addView(ivSearchIcon);
 
         EditText etSearch = new EditText(activity);
-        etSearch.setHint("Search flags, keys or values...");
+        etSearch.setHint("搜索开关名、键或值…");
         etSearch.setTextSize(13.5f);
         etSearch.setTextColor(theme.textPrimary);
         etSearch.setHintTextColor(theme.textSecondary);
@@ -2369,7 +2369,7 @@ public final class PhenotypeFlagManager {
         int tPadV = (int) (7 * density);
 
         TextView tabCurated = new TextView(activity);
-        tabCurated.setText("Morphe Flags");
+        tabCurated.setText("Morphe 开关");
         tabCurated.setTextSize(13);
         tabCurated.setTypeface(null, Typeface.BOLD);
         tabCurated.setGravity(Gravity.CENTER);
@@ -2388,7 +2388,7 @@ public final class PhenotypeFlagManager {
         tabCurated.setFocusable(true);
 
         TextView tabCustom = new TextView(activity);
-        tabCustom.setText("Custom Flags");
+        tabCustom.setText("自定义开关");
         tabCustom.setTextSize(13);
         tabCustom.setTypeface(null, Typeface.BOLD);
         tabCustom.setGravity(Gravity.CENTER);
@@ -2419,12 +2419,12 @@ public final class PhenotypeFlagManager {
 
         int gap = (int) (4 * density);
 
-        LinearLayout btnEnableAllGlobal = createQuickActionPill(activity, MaterialVectorDrawable.TYPE_CHECK, "Enable all", density, theme);
+        LinearLayout btnEnableAllGlobal = createQuickActionPill(activity, MaterialVectorDrawable.TYPE_CHECK, "全部开启", density, theme);
         LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         p1.rightMargin = gap;
         btnEnableAllGlobal.setLayoutParams(p1);
 
-        LinearLayout btnDisableAllGlobal = createQuickActionPill(activity, MaterialVectorDrawable.TYPE_CLOSE, "Disable all", density, theme);
+        LinearLayout btnDisableAllGlobal = createQuickActionPill(activity, MaterialVectorDrawable.TYPE_CLOSE, "全部关闭", density, theme);
         LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         p2.rightMargin = gap;
         btnDisableAllGlobal.setLayoutParams(p2);
@@ -2491,7 +2491,7 @@ public final class PhenotypeFlagManager {
         btnApply.setLayoutParams(applyLp);
 
         TextView tvApply = new TextView(activity);
-        tvApply.setText("Apply and restart");
+        tvApply.setText("应用并重启");
         tvApply.setTextSize(14.5f);
         tvApply.setTypeface(null, Typeface.BOLD);
         tvApply.setTextColor(theme.onPrimary);
@@ -2539,7 +2539,7 @@ public final class PhenotypeFlagManager {
         btnEnableAllGlobal.setOnClickListener(v -> {
             List<DisplayItem> targetFlags = adapter.getActiveFilteredFlags();
             if (targetFlags.isEmpty()) {
-                Toast.makeText(activity, "No matching flags to enable", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "没有可开启的匹配开关", Toast.LENGTH_SHORT).show();
                 return;
             }
             int count = targetFlags.size();
@@ -2562,7 +2562,7 @@ public final class PhenotypeFlagManager {
             tvMsg.setLineSpacing(0, 1.25f);
             msgLayout.addView(tvMsg);
 
-            createM3ActionDialog(activity, title, msgLayout, "Enable (" + count + ")", () -> {
+            createM3ActionDialog(activity, title, msgLayout, "开启（" + count + ")", () -> {
                 SharedPreferences.Editor edit = prefs.edit();
                 if (!isCustom) {
                     for (DisplayItem item : targetFlags) {
@@ -2592,14 +2592,14 @@ public final class PhenotypeFlagManager {
                 edit.apply();
                 GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                 adapter.reloadData();
-                Toast.makeText(activity, "Enabled " + count + " flags! Tap 'Apply and restart' to apply.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "已开启 " + count + " 个开关！点「应用并重启」生效。", Toast.LENGTH_SHORT).show();
             }).show();
         });
 
         btnDisableAllGlobal.setOnClickListener(v -> {
             List<DisplayItem> targetFlags = adapter.getActiveFilteredFlags();
             if (targetFlags.isEmpty()) {
-                Toast.makeText(activity, "No matching flags to disable", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "没有可关闭的匹配开关", Toast.LENGTH_SHORT).show();
                 return;
             }
             int count = targetFlags.size();
@@ -2622,7 +2622,7 @@ public final class PhenotypeFlagManager {
             tvMsg.setLineSpacing(0, 1.25f);
             msgLayout.addView(tvMsg);
 
-            createM3ActionDialog(activity, title, msgLayout, "Disable (" + count + ")", () -> {
+            createM3ActionDialog(activity, title, msgLayout, "关闭（" + count + ")", () -> {
                 SharedPreferences.Editor edit = prefs.edit();
                 if (!isCustom) {
                     for (DisplayItem item : targetFlags) {
@@ -2650,18 +2650,18 @@ public final class PhenotypeFlagManager {
                 edit.apply();
                 GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                 adapter.reloadData();
-                Toast.makeText(activity, "Disabled " + count + " flags! Tap 'Apply and restart' to apply.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "已关闭 " + count + " 个开关！点「应用并重启」生效。", Toast.LENGTH_SHORT).show();
             }).show();
         });
 
         btnExpandAllGlobal.setOnClickListener(v -> {
             adapter.expandAll();
-            Toast.makeText(activity, "Expanded all categories", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "已展开全部分类", Toast.LENGTH_SHORT).show();
         });
 
         btnCollapseAllGlobal.setOnClickListener(v -> {
             adapter.collapseAll();
-            Toast.makeText(activity, "Collapsed all categories", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "已收起全部分类", Toast.LENGTH_SHORT).show();
         });
 
         tabCurated.setOnClickListener(v -> adapter.setSelectedTab(FlagAdapter.TAB_CURATED));
@@ -2688,8 +2688,8 @@ public final class PhenotypeFlagManager {
                 tabBar.setVisibility(View.GONE);
             } else {
                 tabBar.setVisibility(View.VISIBLE);
-                tabCurated.setText("Morphe Flags (" + curatedCount + ")");
-                tabCustom.setText("Custom Flags (" + customCount + ")");
+                tabCurated.setText("Morphe 开关（" + curatedCount + ")");
+                tabCustom.setText("自定义开关（" + customCount + ")");
                 if (selTab == FlagAdapter.TAB_CURATED) {
                     tabCurated.setBackground(createRoundedDrawable(theme.primary, 14 * density));
                     tabCurated.setTextColor(theme.onPrimary);
@@ -2855,7 +2855,7 @@ public final class PhenotypeFlagManager {
         box.addView(iconCircle);
 
         TextView title = new TextView(activity);
-        title.setText("No Flags Configured");
+        title.setText("尚未配置开关");
         title.setTextSize(16);
         title.setTextColor(theme.textPrimary);
         title.setTypeface(null, Typeface.BOLD);
@@ -2864,7 +2864,7 @@ public final class PhenotypeFlagManager {
         box.addView(title);
 
         TextView desc = new TextView(activity);
-        desc.setText("Google Photos is running in stock mode.\nLoad Morphe presets or tap + to add a custom flag.");
+        desc.setText("Google 相册当前处于原版模式。\n可加载 Morphe 预设，或点 + 添加自定义开关。");
         desc.setTextSize(13);
         desc.setTextColor(theme.textSecondary);
         desc.setGravity(Gravity.CENTER);
@@ -2893,7 +2893,7 @@ public final class PhenotypeFlagManager {
             btnLoadPresets.addView(ivPreset);
 
             TextView tvLoad = new TextView(activity);
-            tvLoad.setText("Load Recommended Presets");
+            tvLoad.setText("加载推荐预设");
             tvLoad.setTextSize(13f);
             tvLoad.setTypeface(null, Typeface.BOLD);
             tvLoad.setTextColor(theme.onPrimary);
@@ -2942,18 +2942,18 @@ public final class PhenotypeFlagManager {
         msgLayout.setPadding(mPad, (int) (4 * density), mPad, (int) (12 * density));
 
         TextView tvMsg = new TextView(activity);
-        tvMsg.setText("This will activate all " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " curated Morphe feature flags across AI tools, Create Tab, Stories, and Navigation.\n\nExisting values will be kept, and missing overrides will be enabled.");
+        tvMsg.setText("这会启用全部 " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " 个 Morphe 精选功能开关，覆盖 AI 工具、创建页、故事与导航。\n\n已有的值会保留，缺失的覆盖会被启用。");
         tvMsg.setTextSize(13);
         tvMsg.setTextColor(theme.textPrimary);
         tvMsg.setLineSpacing(0, 1.25f);
         msgLayout.addView(tvMsg);
 
-        createM3ActionDialog(activity, "Load Recommended Presets", msgLayout, "Apply presets", () -> {
+        createM3ActionDialog(activity, "加载推荐预设", msgLayout, "应用预设", () -> {
             PhotoFlagsRegistry.applyCuratedDefaults(prefs);
             prefs.edit().putBoolean("_presets_loaded", true).apply();
             GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
             if (onComplete != null) onComplete.run();
-            Toast.makeText(activity, "Loaded " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " Morphe presets! Restart to take effect.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "已加载 " + PhotoFlagsRegistry.CURATED_FLAGS.size() + " 个 Morphe 预设！重启后生效。", Toast.LENGTH_LONG).show();
         }).show();
     }
 
@@ -3027,7 +3027,7 @@ public final class PhenotypeFlagManager {
         }));
 
         // 4. Copy All to Clipboard
-        items.add(new MenuItem("quantum_gm_ic_content_copy_vd_theme_24", MaterialVectorDrawable.TYPE_CLIPBOARD, "Copy All to Clipboard", "Copy all configured flags to clipboard as JSON", () -> {
+        items.add(new MenuItem("quantum_gm_ic_content_copy_vd_theme_24", MaterialVectorDrawable.TYPE_CLIPBOARD, "全部复制到剪贴板", "将所有配置的标志以 JSON 形式复制到剪贴板", () -> {
             Map<String, ?> all = prefs.getAll();
             JSONObject json = new JSONObject();
             try {
@@ -3038,16 +3038,16 @@ public final class PhenotypeFlagManager {
                 }
                 ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
                 if (cm != null) {
-                    cm.setPrimaryClip(ClipData.newPlainText("Flags JSON", json.toString(2)));
-                    Toast.makeText(activity, "Copied " + json.length() + " flags to clipboard", Toast.LENGTH_SHORT).show();
+                    cm.setPrimaryClip(ClipData.newPlainText("开关 JSON", json.toString(2)));
+                    Toast.makeText(activity, "已复制 " + json.length() + " 个开关到剪贴板", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(activity, "Export failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "导出失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }));
 
         // 5. Share Flags Backup
-        items.add(new MenuItem("quantum_gm_ic_share_vd_theme_24", MaterialVectorDrawable.TYPE_EXPORT, "Share Flags Backup", "Share active flags JSON via messaging, cloud, or notes", () -> {
+        items.add(new MenuItem("quantum_gm_ic_share_vd_theme_24", MaterialVectorDrawable.TYPE_EXPORT, "分享开关备份", "通过消息、云或笔记分享活动标志 JSON", () -> {
             Map<String, ?> all = prefs.getAll();
             JSONObject json = new JSONObject();
             try {
@@ -3060,14 +3060,14 @@ public final class PhenotypeFlagManager {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, json.toString(2));
                 sendIntent.setType("text/plain");
-                Intent shareIntent = Intent.createChooser(sendIntent, "Share Flags Backup");
+                Intent shareIntent = Intent.createChooser(sendIntent, "分享开关备份");
                 activity.startActivity(shareIntent);
             } catch (Exception e) {
-                Toast.makeText(activity, "Share failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "分享失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }));
 
-        Dialog dialog = createM3Dialog(activity, "Flag Options", null);
+        Dialog dialog = createM3Dialog(activity, "开关选项", null);
 
         for (MenuItem mi : items) {
             LinearLayout row = new LinearLayout(activity);
@@ -3267,7 +3267,7 @@ public final class PhenotypeFlagManager {
             SafHelperFragment fragment = new SafHelperFragment();
             fragment.setOpenCallback(uri -> {
                 if (uri == null) return;
-                Dialog loading = showLoadingDialog(activity, "Importing Flags...", "Reading file and saving overrides...");
+                Dialog loading = showLoadingDialog(activity, "正在导入开关...", "读取文件并保存覆盖...");
                 IO_EXECUTOR.execute(() -> {
                     int count = 0;
                     try {
@@ -3284,7 +3284,7 @@ public final class PhenotypeFlagManager {
                     final int finalCount = count;
                     activity.runOnUiThread(() -> {
                         loading.dismiss();
-                        Toast.makeText(activity, "✓ Imported " + finalCount + " flags from file!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "✓ 已导入 " + finalCount + " 个开关！", Toast.LENGTH_SHORT).show();
                         if (onRefresh != null) onRefresh.run();
                     });
                 });
@@ -3294,7 +3294,7 @@ public final class PhenotypeFlagManager {
             fragment.openDocument(new String[]{"text/plain", "application/json", "text/xml", "*/*"});
         } catch (Throwable t) {
             Logger.printException(() -> "Error launching SAF file picker", t);
-            Toast.makeText(activity, "Could not open file picker", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "无法打开文件选择器", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3320,9 +3320,9 @@ public final class PhenotypeFlagManager {
                     final boolean finalSuccess = success;
                     activity.runOnUiThread(() -> {
                         if (finalSuccess) {
-                            Toast.makeText(activity, "✓ Exported flags to file!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "✓ 已导出开关到文件！", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(activity, "Failed to save file", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "保存文件失败", Toast.LENGTH_SHORT).show();
                         }
                     });
                 });
@@ -3332,7 +3332,7 @@ public final class PhenotypeFlagManager {
             fragment.createDocument("morphe_photos_flags.json", "application/json");
         } catch (Throwable t) {
             Logger.printException(() -> "Error launching SAF file save", t);
-            Toast.makeText(activity, "Could not open file saver", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "无法打开文件保存器", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3340,8 +3340,8 @@ public final class PhenotypeFlagManager {
         String jsonStr = generateExportJson(prefs);
         ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) {
-            cm.setPrimaryClip(ClipData.newPlainText("Photos Flags", jsonStr));
-            Toast.makeText(activity, "✓ Copied flags to clipboard!", Toast.LENGTH_SHORT).show();
+            cm.setPrimaryClip(ClipData.newPlainText("相册开关", jsonStr));
+            Toast.makeText(activity, "✓ 已复制开关到剪贴板！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3372,7 +3372,7 @@ public final class PhenotypeFlagManager {
         layout.setPadding(p, 0, p, (int) (8 * density));
 
         TextView tvHelp = new TextView(activity);
-        tvHelp.setText("Paste Key=Value lines, JSON preset, or Phenotype XML:");
+        tvHelp.setText("粘贴 Key=Value 行、JSON 预设或 Phenotype XML：");
         tvHelp.setTextSize(12);
         tvHelp.setTextColor(theme.textSecondary);
         tvHelp.setPadding(0, 0, 0, (int) (6 * density));
@@ -3405,7 +3405,7 @@ public final class PhenotypeFlagManager {
         btnPasteClipboard.addView(ivPaste);
 
         TextView tvPaste = new TextView(activity);
-        tvPaste.setText("Paste from clipboard");
+        tvPaste.setText("从剪贴板粘贴");
         tvPaste.setTextSize(12);
         tvPaste.setTypeface(null, Typeface.BOLD);
         tvPaste.setTextColor(ivPasteColor);
@@ -3413,7 +3413,7 @@ public final class PhenotypeFlagManager {
         actionRow.addView(btnPasteClipboard);
 
         TextView tvCountPreview = new TextView(activity);
-        tvCountPreview.setText("0 flags detected");
+        tvCountPreview.setText("检测到 0 个开关");
         tvCountPreview.setTextSize(12);
         tvCountPreview.setTextColor(theme.textSecondary);
         tvCountPreview.setGravity(Gravity.END);
@@ -3423,7 +3423,7 @@ public final class PhenotypeFlagManager {
         layout.addView(actionRow);
 
         EditText etInput = new EditText(activity);
-        etInput.setHint("Paste flags here...\ne.g.\n45705305=true\n45762698=2\n45531621=true");
+        etInput.setHint("在此粘贴开关…\n例如\n45705305=true\n45762698=2\n45531621=true");
         etInput.setTextSize(13);
         etInput.setTextColor(theme.textPrimary);
         etInput.setHintTextColor(theme.textSecondary);
@@ -3446,7 +3446,7 @@ public final class PhenotypeFlagManager {
                 countRunnable[0] = () -> {
                     IO_EXECUTOR.execute(() -> {
                         int detected = countFlagsInText(text);
-                        activity.runOnUiThread(() -> tvCountPreview.setText(detected + " flags detected"));
+                        activity.runOnUiThread(() -> tvCountPreview.setText(detected + " 个开关"));
                     });
                 };
                 MAIN_HANDLER.postDelayed(countRunnable[0], 250);
@@ -3460,23 +3460,23 @@ public final class PhenotypeFlagManager {
                 CharSequence text = cm.getPrimaryClip().getItemAt(0).getText();
                 if (text != null) {
                     etInput.setText(text);
-                    Toast.makeText(activity, "Pasted from clipboard", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "已从剪贴板粘贴", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(activity, "Clipboard is empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "剪贴板是空的", Toast.LENGTH_SHORT).show();
             }
         });
 
-        Dialog dialog = createM3ActionDialog(activity, "Bulk Paste Flags", layout, "Import all", () -> {
+        Dialog dialog = createM3ActionDialog(activity, "批量粘贴开关", layout, "全部导入", () -> {
             String text = etInput.getText().toString().trim();
             if (!text.isEmpty()) {
-                Dialog loading = showLoadingDialog(activity, "Importing Flags...", "Parsing flags and saving overrides...");
+                Dialog loading = showLoadingDialog(activity, "正在导入开关...", "正在解析标志并保存覆盖...");
                 IO_EXECUTOR.execute(() -> {
                     BufferedReader reader = new BufferedReader(new StringReader(text));
                     int count = importFlagsStream(activity, prefs, reader);
                     activity.runOnUiThread(() -> {
                         loading.dismiss();
-                        Toast.makeText(activity, "✓ Imported " + count + " flags!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "✓ 已导入 " + count + " 个开关！", Toast.LENGTH_SHORT).show();
                         if (onRefresh != null) onRefresh.run();
                     });
                 });
@@ -3749,7 +3749,7 @@ public final class PhenotypeFlagManager {
         layout.setPadding(p, 0, p, (int) (8 * density));
 
         TextView tvTypeLabel = new TextView(activity);
-        tvTypeLabel.setText("Flag Data Type:");
+        tvTypeLabel.setText("开关数据类型：");
         tvTypeLabel.setTextSize(12);
         tvTypeLabel.setTextColor(theme.textSecondary);
         tvTypeLabel.setPadding(0, 0, 0, (int) (6 * density));
@@ -3765,7 +3765,7 @@ public final class PhenotypeFlagManager {
         String[] typeNames = new String[]{"Boolean", "Long", "Float", "String"};
 
         EditText etKey = new EditText(activity);
-        etKey.setHint("Flag ID (e.g. 45705305)");
+        etKey.setHint("开关 ID（例如 45705305）");
         etKey.setTextSize(14);
         etKey.setTextColor(theme.textPrimary);
         etKey.setHintTextColor(theme.textSecondary);
@@ -3775,7 +3775,7 @@ public final class PhenotypeFlagManager {
 
         EditText etVal = new EditText(activity);
         etVal.setText("true");
-        etVal.setHint("Value (true / false)");
+        etVal.setHint("值（true / false）");
         etVal.setTextSize(14);
         etVal.setTextColor(theme.textPrimary);
         etVal.setHintTextColor(theme.textSecondary);
@@ -3792,16 +3792,16 @@ public final class PhenotypeFlagManager {
                 typeButtons[i].setTextColor(isSel ? theme.onPrimary : theme.textPrimary);
             }
             if (selectedType[0] == 0) {
-                etVal.setHint("true or false");
+                etVal.setHint("true 或 false");
                 if (etVal.getText().toString().isEmpty() || etVal.getText().toString().equals("0")) etVal.setText("true");
             } else if (selectedType[0] == 1) {
-                etVal.setHint("Integer value (e.g. 2, 3)");
+                etVal.setHint("整数（例如 2、3）");
                 if (etVal.getText().toString().equals("true") || etVal.getText().toString().equals("false")) etVal.setText("1");
             } else if (selectedType[0] == 2) {
-                etVal.setHint("Decimal value (e.g. 1.5, 2.0)");
+                etVal.setHint("小数（例如 1.5、2.0）");
                 if (etVal.getText().toString().equals("true") || etVal.getText().toString().equals("false")) etVal.setText("1.0");
             } else {
-                etVal.setHint("String value");
+                etVal.setHint("字符串");
             }
         };
 
@@ -3833,7 +3833,7 @@ public final class PhenotypeFlagManager {
         layout.addView(etKey);
         layout.addView(etVal);
 
-        Dialog dialog = createM3ActionDialog(activity, "Add Custom Flag", layout, "Save", () -> {
+        Dialog dialog = createM3ActionDialog(activity, "添加自定义开关", layout, "保存", () -> {
             String k = etKey.getText().toString().trim();
             String v = etVal.getText().toString().trim();
             if (!k.isEmpty() && !v.isEmpty()) {
@@ -3864,7 +3864,7 @@ public final class PhenotypeFlagManager {
                 if ("45781251".equals(k) || "45531621".equals(k) || "45531625".equals(k)) {
                     GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                 }
-                Toast.makeText(activity, "✓ Saved custom flag (" + typeNames[selectedType[0]] + ")", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "✓ 已保存自定义开关（" + typeNames[selectedType[0]] + ")", Toast.LENGTH_SHORT).show();
                 onRefresh.run();
             }
         });
@@ -3886,7 +3886,7 @@ public final class PhenotypeFlagManager {
                 : (currentVal instanceof Number) ? "Long (Integer)" : "String";
 
         TextView tvDesc = new TextView(activity);
-        tvDesc.setText("Editing " + typeDesc + " for:\n" + title);
+        tvDesc.setText("正在编辑 " + typeDesc + " 的值，类型：\n" + title);
         tvDesc.setTextSize(13);
         tvDesc.setTextColor(theme.textSecondary);
         tvDesc.setPadding(0, 0, 0, (int) (8 * density));
@@ -3902,7 +3902,7 @@ public final class PhenotypeFlagManager {
         etVal.setPadding(pad, pad, pad, pad);
         layout.addView(etVal);
 
-        Dialog dialog = createM3ActionDialog(activity, "Edit Flag Value", layout, "Save", () -> {
+        Dialog dialog = createM3ActionDialog(activity, "编辑开关值", layout, "保存", () -> {
             String v = etVal.getText().toString().trim();
             if (!v.isEmpty()) {
                 SharedPreferences.Editor ed = prefs.edit();
@@ -3931,7 +3931,7 @@ public final class PhenotypeFlagManager {
                 if ("45781251".equals(key) || "45531621".equals(key) || "45531625".equals(key)) {
                     GooglePhotosAccountAvatar.syncOneGoogleFlags(activity);
                 }
-                Toast.makeText(activity, "Updated " + title, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "已更新 " + title, Toast.LENGTH_SHORT).show();
                 onRefresh.run();
             }
         });
@@ -4121,7 +4121,7 @@ public final class PhenotypeFlagManager {
         actions.setPadding(p, (int) (8 * density), p, (int) (18 * density));
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(13.5f);
         btnCancel.setTypeface(null, Typeface.BOLD);
         btnCancel.setTextColor(theme.primary);

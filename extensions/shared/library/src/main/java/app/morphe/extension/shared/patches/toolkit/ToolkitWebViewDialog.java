@@ -133,14 +133,14 @@ public class ToolkitWebViewDialog {
                 titleBox.setLayoutParams(tbLp);
 
                 TextView tvTitle = new TextView(activity);
-                tvTitle.setText("Google Photos Toolkit");
+                tvTitle.setText("Google 相册工具箱");
                 tvTitle.setTextSize(16f);
                 tvTitle.setTextColor(0xFFE3E3E3);
                 tvTitle.setTypeface(null, Typeface.BOLD);
                 titleBox.addView(tvTitle);
 
                 TextView tvSub = new TextView(activity);
-                tvSub.setText("xob0t GPTK Web Client");
+                tvSub.setText("xob0t GPTK 网页客户端");
                 tvSub.setTextSize(11.5f);
                 tvSub.setTextColor(0xFF8E918F);
                 titleBox.addView(tvSub);
@@ -149,7 +149,7 @@ public class ToolkitWebViewDialog {
 
                 // Sign In / Switch Account Button
                 TextView btnLogin = new TextView(activity);
-                btnLogin.setText("Sign In");
+                btnLogin.setText("登录");
                 btnLogin.setTextSize(13f);
                 btnLogin.setTextColor(0xFFFFFFFF);
                 btnLogin.setTypeface(null, Typeface.BOLD);
@@ -183,7 +183,7 @@ public class ToolkitWebViewDialog {
                                 android.content.Intent.ACTION_VIEW, android.net.Uri.parse(PHOTOS_WEB_URL));
                         activity.startActivity(intent);
                     } catch (Throwable t) {
-                        Toast.makeText(activity, "Cannot open browser: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "无法打开浏览器：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 topBar.addView(btnBrowser);
@@ -237,7 +237,7 @@ public class ToolkitWebViewDialog {
 
             } catch (Throwable t) {
                 Logger.printException(() -> "Error showing Toolkit WebView Dialog", t);
-                Toast.makeText(activity, "Could not open Toolkit: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "无法打开工具箱：" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -291,7 +291,7 @@ public class ToolkitWebViewDialog {
                             && !TrustedGoogleMedia.isHost(url, "accounts.google.com")) {
                         if ("https".equalsIgnoreCase(request.getUrl().getScheme())) {
                             try { activity.startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW, request.getUrl())); }
-                            catch (Exception ignored) { Toast.makeText(activity, "Could not open link", Toast.LENGTH_SHORT).show(); }
+                            catch (Exception ignored) { Toast.makeText(activity, "无法打开链接", Toast.LENGTH_SHORT).show(); }
                         }
                         return true;
                     }

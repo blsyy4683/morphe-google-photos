@@ -186,14 +186,14 @@ public final class DiagnosticsDialog {
         titleCol.setLayoutParams(titleLp);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Diagnostics & Logs");
+        tvTitle.setText("诊断与日志");
         tvTitle.setTextSize(17.5f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         titleCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Inspection & Session Analyzer");
+        tvSub.setText("会话记录分析");
         tvSub.setTextSize(11.5f);
         tvSub.setTextColor(theme.textSecondary);
         titleCol.addView(tvSub);
@@ -221,7 +221,7 @@ public final class DiagnosticsDialog {
         sessionCard.setLayoutParams(scLp);
 
         TextView tvSessionLabel = new TextView(activity);
-        tvSessionLabel.setText("Active Log Session");
+        tvSessionLabel.setText("当前日志会话");
         tvSessionLabel.setTextSize(11.5f);
         tvSessionLabel.setTypeface(null, Typeface.BOLD);
         tvSessionLabel.setTextColor(theme.primary);
@@ -240,7 +240,7 @@ public final class DiagnosticsDialog {
         sessionSelectorBox.setLayoutParams(ssbLp);
 
         TextView tvSelectedSession = new TextView(activity);
-        tvSelectedSession.setText("Select session...");
+        tvSelectedSession.setText("选择会话…");
         tvSelectedSession.setTextSize(13f);
         tvSelectedSession.setTypeface(null, Typeface.BOLD);
         tvSelectedSession.setTextColor(theme.textPrimary);
@@ -301,7 +301,7 @@ public final class DiagnosticsDialog {
         inputWrapper.addView(ivSearchIcon);
 
         EditText etSearch = new EditText(activity);
-        etSearch.setHint("Search logs (e.g. backup, album, toolkit, exception)...");
+        etSearch.setHint("搜索日志（例如 backup、album、toolkit、exception）…");
         etSearch.setTextSize(13.5f);
         etSearch.setTextColor(theme.textPrimary);
         etSearch.setHintTextColor(theme.textSecondary);
@@ -344,7 +344,7 @@ public final class DiagnosticsDialog {
         final Runnable[] loadLogsRef = new Runnable[1];
 
         final String[][] chipDefs = new String[][] {
-            {"ALL", "All"},
+            {"ALL", "全选"},
             {"ERROR", "🚨 Errors & Crashes"},
             {"WARN", "⚠️ Warnings"},
             {"INFO", "ℹ️ Info"},
@@ -449,7 +449,7 @@ public final class DiagnosticsDialog {
         btnExport.addView(ivExport);
 
         TextView tvExport = new TextView(activity);
-        tvExport.setText("Export File");
+        tvExport.setText("导出文件");
         tvExport.setTextSize(13f);
         tvExport.setTypeface(null, Typeface.BOLD);
         tvExport.setTextColor(theme.onPrimary);
@@ -475,7 +475,7 @@ public final class DiagnosticsDialog {
         btnCopy.addView(ivCopy);
 
         TextView tvCopy = new TextView(activity);
-        tvCopy.setText("Copy (GitHub)");
+        tvCopy.setText("复制（GitHub 格式）");
         tvCopy.setTextSize(12.5f);
         tvCopy.setTypeface(null, Typeface.BOLD);
         tvCopy.setTextColor(theme.primary);
@@ -552,7 +552,7 @@ public final class DiagnosticsDialog {
 
         Runnable loadLogs = () -> {
             if (activeSession[0] == null) {
-                tvLogs.setText("No log session selected.");
+                tvLogs.setText("还没有选择日志会话。");
                 return;
             }
             final String q = etSearch.getText().toString();
@@ -572,8 +572,8 @@ public final class DiagnosticsDialog {
             sessions.clear();
             sessions.addAll(SessionLogManager.getAllSessions());
             if (sessions.isEmpty()) {
-                tvSelectedSession.setText("No sessions found");
-                tvLogs.setText("No sessions found yet.");
+                tvSelectedSession.setText("没有找到会话");
+                tvLogs.setText("目前还没有会话记录。");
                 return;
             }
 
@@ -760,14 +760,14 @@ public final class DiagnosticsDialog {
         LinearLayout titleCol = new LinearLayout(activity);
         titleCol.setOrientation(LinearLayout.VERTICAL);
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Log Sessions");
+        tvTitle.setText("日志会话");
         tvTitle.setTextSize(16.5f);
         tvTitle.setTextColor(theme.textPrimary);
         tvTitle.setTypeface(null, Typeface.BOLD);
         titleCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Select a session to inspect");
+        tvSub.setText("选择一个会话查看");
         tvSub.setTextSize(11.5f);
         tvSub.setTextColor(theme.textSecondary);
         titleCol.addView(tvSub);
@@ -895,14 +895,14 @@ public final class DiagnosticsDialog {
         }
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Clear Old Sessions?");
+        tvTitle.setText("清除旧会话记录？");
         tvTitle.setTextSize(18.5f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         root.addView(tvTitle);
 
         TextView tvMsg = new TextView(activity);
-        tvMsg.setText("This will delete all previous session logs. The active session log will be kept.");
+        tvMsg.setText("这会删除此前所有会话日志，当前会话的日志会保留。");
         tvMsg.setTextSize(14f);
         tvMsg.setTextColor(theme.textSecondary);
         LinearLayout.LayoutParams msgLp = new LinearLayout.LayoutParams(
@@ -919,7 +919,7 @@ public final class DiagnosticsDialog {
         int padV = (int) (10 * density);
 
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(14f);
         btnCancel.setTypeface(null, Typeface.BOLD);
         btnCancel.setTextColor(theme.primary);
@@ -935,7 +935,7 @@ public final class DiagnosticsDialog {
         actions.addView(btnCancel, cancelLp);
 
         TextView btnClearConfirm = new TextView(activity);
-        btnClearConfirm.setText("Clear");
+        btnClearConfirm.setText("清除");
         btnClearConfirm.setTextSize(14f);
         btnClearConfirm.setTypeface(null, Typeface.BOLD);
         btnClearConfirm.setTextColor(theme.onPrimary);
@@ -947,7 +947,7 @@ public final class DiagnosticsDialog {
         btnClearConfirm.setOnClickListener(v -> {
             d.dismiss();
             if (onConfirm != null) onConfirm.run();
-            Toast.makeText(activity, "Cleared previous sessions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "已清除旧会话", Toast.LENGTH_SHORT).show();
         });
         actions.addView(btnClearConfirm, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1003,14 +1003,14 @@ public final class DiagnosticsDialog {
         String filterDesc = SessionLogManager.getFilterDescription(levelFilter, filterQuery);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText(isFiltered ? "Export Filtered Log" : "Export Log File");
+        tvTitle.setText(isFiltered ? "导出筛选后的日志" : "导出日志文件");
         tvTitle.setTextSize(18.5f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         root.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText(isFiltered ? "Active Filter: [" + filterDesc + "]\nSelect format to save into Downloads/Morphe/:" : "Select file format to save into Downloads/Morphe/:");
+        tvSub.setText(isFiltered ? "当前筛选：[" + filterDesc + "]\n选择保存格式（存到 Downloads/Morphe/）：" : "选择保存到 Downloads/Morphe/ 的文件格式：");
         tvSub.setTextSize(13f);
         tvSub.setTextColor(theme.textSecondary);
         LinearLayout.LayoutParams subLp = new LinearLayout.LayoutParams(
@@ -1057,7 +1057,7 @@ public final class DiagnosticsDialog {
 
         // Cancel
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(14f);
         btnCancel.setTypeface(null, Typeface.BOLD);
         btnCancel.setTextColor(theme.primary);
@@ -1109,14 +1109,14 @@ public final class DiagnosticsDialog {
         String filterDesc = SessionLogManager.getFilterDescription(levelFilter, filterQuery);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText(isFiltered ? "Share Filtered Log" : "Share Diagnostics");
+        tvTitle.setText(isFiltered ? "分享筛选后的日志" : "分享诊断信息");
         tvTitle.setTextSize(18.5f);
         tvTitle.setTypeface(null, Typeface.BOLD);
         tvTitle.setTextColor(theme.textPrimary);
         root.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText(isFiltered ? "Active Filter: [" + filterDesc + "]\nSelect how to share:" : "Select how to share this session:");
+        tvSub.setText(isFiltered ? "当前筛选：[" + filterDesc + "]\n选择分享方式：" : "选择这个会话的分享方式：");
         tvSub.setTextSize(13f);
         tvSub.setTextColor(theme.textSecondary);
         LinearLayout.LayoutParams subLp = new LinearLayout.LayoutParams(
@@ -1163,7 +1163,7 @@ public final class DiagnosticsDialog {
 
         // Cancel
         TextView btnCancel = new TextView(activity);
-        btnCancel.setText("Cancel");
+        btnCancel.setText("取消");
         btnCancel.setTextSize(14f);
         btnCancel.setTypeface(null, Typeface.BOLD);
         btnCancel.setTextColor(theme.primary);

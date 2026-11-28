@@ -74,7 +74,7 @@ public final class MorpheSettingsScreen {
                 showInternal(activity);
             } catch (Throwable t) {
                 Logger.printException(() -> "Error showing MorpheSettingsScreen", t);
-                Toast.makeText(activity, "Error opening Morphe Settings: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "打开 Morphe 设置出错：" + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -172,7 +172,7 @@ public final class MorpheSettingsScreen {
         titleCol.setLayoutParams(titleColLp);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Morphe Settings");
+        tvTitle.setText("Morphe 设置");
         tvTitle.setTextSize(19f);
         tvTitle.setTextColor(theme.textPrimary);
         tvTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
@@ -251,7 +251,7 @@ public final class MorpheSettingsScreen {
         ovTextCol.setLayoutParams(ovTextColLp);
 
         TextView ovTitle = new TextView(activity);
-        ovTitle.setText("Morphe Enhancements");
+        ovTitle.setText("Morphe 增强");
         ovTitle.setTextSize(16f);
         ovTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         ovTitle.setTextColor(theme.textPrimary);
@@ -268,8 +268,8 @@ public final class MorpheSettingsScreen {
 
         TextView ovDesc = new TextView(activity);
         ovDesc.setText(activeOverrides > 0 
-                ? activeOverrides + " active feature overrides • All systems active" 
-                : "Stock mode • Recommended presets available");
+                ? activeOverrides + " 项功能覆盖已生效 • 所有系统正常" 
+                : "原版模式 • 可加载推荐预设");
         ovDesc.setTextSize(12.5f);
         ovDesc.setTextColor(theme.textSecondary);
         ovTextCol.addView(ovDesc);
@@ -291,12 +291,12 @@ public final class MorpheSettingsScreen {
         chipsRow.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         chipsRow.addView(createMiniChip(activity, density, theme, 
-                "Backup: " + DeviceSpoofHelper.getProfileChipName()));
+                "备份：" + DeviceSpoofHelper.getProfileChipName()));
         chipsRow.addView(createMiniChip(activity, density, theme,
-                "Bar: " + FloatingTabBarHelper.getModeChipName(activity)));
-        chipsRow.addView(createMiniChip(activity, density, theme, "Flags: " + activeOverrides + " active"));
-        chipsRow.addView(createMiniChip(activity, density, theme, "Toolkit: Ready"));
-        chipsRow.addView(createMiniChip(activity, density, theme, "On-Device AI: OK"));
+                "导航栏：" + FloatingTabBarHelper.getModeChipName(activity)));
+        chipsRow.addView(createMiniChip(activity, density, theme, "功能开关：" + activeOverrides + " 项生效"));
+        chipsRow.addView(createMiniChip(activity, density, theme, "工具包：就绪"));
+        chipsRow.addView(createMiniChip(activity, density, theme, "端侧 AI：正常"));
 
         chipsScroll.addView(chipsRow);
         overviewCard.addView(chipsScroll);
@@ -305,13 +305,13 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 1.5. Backup Storage Profile
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Backup & Storage"));
+        content.addView(createSectionHeader(activity, density, theme, "备份与存储"));
         LinearLayout backupGroup = createCardContainer(activity, density, theme);
 
         backupGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_backup_vd_theme_24",
                 MaterialVectorDrawable.TYPE_SYNC,
-                "Backup Storage Profile",
+                "备份存储配置档",
                 DeviceSpoofHelper.getProfileDisplayName(),
                 () -> showBackupProfileDialog(activity, onBack, theme)));
 
@@ -320,14 +320,14 @@ public final class MorpheSettingsScreen {
         backupGroup.addView(createSwitchPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_image_vd_theme_24",
                 MaterialVectorDrawable.TYPE_PHOTO,
-                "Upload photos only",
-                "Automatic backup uploads photos but skips videos",
+                "仅上传照片",
+                "自动备份只上传照片，跳过视频",
                 PhotosOnlyBackupFilter.isEnabled(),
                 (buttonView, isChecked) -> {
                     PhotosOnlyBackupFilter.setEnabled(activity, isChecked);
                     Toast.makeText(activity, isChecked
-                            ? "Upload photos only: ON — videos will not be backed up automatically"
-                            : "Upload photos only: OFF — videos will back up again",
+                            ? "仅上传照片：已开启 —— 视频不再自动备份"
+                            : "仅上传照片：已关闭 —— 视频恢复自动备份",
                             Toast.LENGTH_SHORT).show();
                 }));
 
@@ -336,24 +336,24 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 1.7. Timeline & Photos View
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Timeline & Photos View"));
+        content.addView(createSectionHeader(activity, density, theme, "时间线与照片视图"));
         LinearLayout timelineGroup = createCardContainer(activity, density, theme);
 
         timelineGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_folder_vd_theme_24",
                 MaterialVectorDrawable.TYPE_GRID,
-                "Customize timeline folders",
-                "Choose device folders (Camera, Screenshots, etc.) to show on your main Photos timeline",
+                "自定义时间线文件夹",
+                "选择要在照片主时间线中显示的设备文件夹（相机、截屏等）",
                 () -> PhotosTimelineFilter.showFolderPickerDialog(activity, theme)));
 
         content.addView(timelineGroup);
-        content.addView(createSectionHeader(activity, density, theme, "Interface & Navigation"));
+        content.addView(createSectionHeader(activity, density, theme, "界面与导航"));
         LinearLayout navGroup = createCardContainer(activity, density, theme);
 
         navGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_dock_to_bottom_vd_theme_24",
                 MaterialVectorDrawable.TYPE_PRESETS,
-                "Floating Menu Bar Style",
+                "悬浮菜单栏样式",
                 FloatingTabBarHelper.getModeDisplayName(activity),
                 () -> showFloatingBarModeDialog(activity, onBack, theme)));
 
@@ -362,14 +362,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 2. Feature Flags & Experiments
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Flags & Experiments"));
+        content.addView(createSectionHeader(activity, density, theme, "功能开关与实验"));
         LinearLayout flagsGroup = createCardContainer(activity, density, theme);
 
         flagsGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_tune_vd_theme_24",
                 MaterialVectorDrawable.TYPE_TUNE,
-                "In-App Flag Manager",
-                "Search, filter, toggle experimental redesigns and feature flags",
+                "应用内开关管理器",
+                "搜索、筛选并切换实验性改版与功能开关",
                 () -> {
                     if (isDialog && onBack != null) onBack.run();
                     PhenotypeFlagManager.showFlagManagerDialog(activity);
@@ -380,8 +380,8 @@ public final class MorpheSettingsScreen {
         flagsGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_auto_awesome_vd_theme_24",
                 MaterialVectorDrawable.TYPE_PRESETS,
-                "Curated Presets",
-                "Apply recommended configurations (Ultra Pixel, Modern UI)",
+                "精选预设",
+                "一键应用推荐配置（Ultra Pixel、现代界面）",
                 () -> PhenotypeFlagManager.showCuratedPresetsDialog(activity, null)));
 
         flagsGroup.addView(createItemDivider(activity, density, theme));
@@ -389,8 +389,8 @@ public final class MorpheSettingsScreen {
         flagsGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_restore_vd_theme_24",
                 MaterialVectorDrawable.TYPE_RESTART,
-                "Reset All Flag Overrides",
-                "Clear custom phenotype flags and restore stock app defaults",
+                "重置全部开关覆盖",
+                "清除自定义 phenotype 开关，恢复应用默认行为",
                 (theme.isDark ? 0xFFFFB4AB : 0xFFBA1A1A),
                 () -> showResetFlagsDialog(activity, onBack, theme)));
 
@@ -399,14 +399,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 3. Native Toolkit & Media Utilities
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Toolkit & Media Management"));
+        content.addView(createSectionHeader(activity, density, theme, "工具包与媒体管理"));
         LinearLayout toolkitGroup = createCardContainer(activity, density, theme);
 
         toolkitGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_space_dashboard_vd_theme_24",
                 MaterialVectorDrawable.TYPE_TOOLKIT,
-                "Launch Google Photos Toolkit",
-                "Batch creation downloader, deduplication, and media filtering",
+                "启动 Google 相册工具箱",
+                "批量下载创作、本地去重与媒体筛选",
                 () -> {
                     if (isDialog && onBack != null) onBack.run();
                     NativeToolkitDialog.show(activity);
@@ -417,11 +417,11 @@ public final class MorpheSettingsScreen {
         toolkitGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_delete_vd_theme_24",
                 MaterialVectorDrawable.TYPE_DELETE,
-                "Storage & Cache Cleaner",
-                "Purge thumbnail memory cache and transient download artifacts",
+                "存储与缓存清理",
+                "清理缩略图内存缓存与临时下载文件",
                 () -> {
                     NativeToolkitDialog.clearCache();
-                    Toast.makeText(activity, "Morphe: Thumbnail and temporary cache cleared", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Morphe 缩略图与临时缓存已清理", Toast.LENGTH_SHORT).show();
                 }));
 
         content.addView(toolkitGroup);
@@ -429,14 +429,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 4. On-Device AI & ML Models
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "On-Device AI & Models"));
+        content.addView(createSectionHeader(activity, density, theme, "端侧 AI 与模型"));
         LinearLayout aiGroup = createCardContainer(activity, density, theme);
 
         aiGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_cloud_download_vd_theme_24",
                 MaterialVectorDrawable.TYPE_DOWNLOAD,
-                "AI & ML Model Manager",
-                "Inspect, seed and verify Gemini Nano, Magic Eraser, and segmentation assets",
+                "AI 与机器学习模型管理",
+                "检查、预置并校验 Gemini Nano、魔术橡皮擦与抠图模型资源",
                 () -> {
                     if (isDialog && onBack != null) onBack.run();
                     PhotosModelSeeder.showModelManagerDialog(activity);
@@ -447,14 +447,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 5. Diagnostics & Logging
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Diagnostics & Logs"));
+        content.addView(createSectionHeader(activity, density, theme, "诊断与日志"));
         LinearLayout diagGroup = createCardContainer(activity, density, theme);
 
         diagGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_notes_vd_theme_24",
                 MaterialVectorDrawable.TYPE_LOGS,
-                "Diagnostics Viewer & Session Logs",
-                "Real-time logcat reader, phenotype dump, and system diagnostics",
+                "诊断查看器与会话日志",
+                "实时 logcat 读取、phenotype 导出与系统诊断",
                 () -> {
                     if (isDialog && onBack != null) onBack.run();
                     DiagnosticsDialog.show(activity);
@@ -465,14 +465,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 6. Creations Registry
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "Creations Registry"));
+        content.addView(createSectionHeader(activity, density, theme, "创作保存记录"));
         LinearLayout registryGroup = createCardContainer(activity, density, theme);
 
         registryGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_auto_awesome_mosaic_vd_theme_24",
                 MaterialVectorDrawable.TYPE_SYNC,
-                "Clear MFY Creations Save Status",
-                "Reset Made-For-You card tracking to restore and re-save cards in Create tab",
+                "清除「为你生成」保存状态",
+                "重置「为你生成」卡片记录，让「创建」页的卡片可以重新保存",
                 () -> showClearMfyDialog(activity, theme)));
 
         registryGroup.addView(createItemDivider(activity, density, theme));
@@ -480,8 +480,8 @@ public final class MorpheSettingsScreen {
         registryGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_history_vd_theme_24",
                 MaterialVectorDrawable.TYPE_RESTART,
-                "Clear Story Creations Save Status",
-                "Reset download tracking for Memories and Story highlight creations",
+                "清除故事创作保存状态",
+                "重置回忆与故事精选创作的下载记录",
                 () -> showClearStoryDialog(activity, theme)));
 
         content.addView(registryGroup);
@@ -489,14 +489,14 @@ public final class MorpheSettingsScreen {
         // ─────────────────────────────────────────────────────────────────────
         // 7. About Morphe
         // ─────────────────────────────────────────────────────────────────────
-        content.addView(createSectionHeader(activity, density, theme, "About Morphe"));
+        content.addView(createSectionHeader(activity, density, theme, "关于 Morphe"));
         LinearLayout aboutGroup = createCardContainer(activity, density, theme);
 
         aboutGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_info_vd_theme_24",
                 MaterialVectorDrawable.TYPE_TAG,
-                "Morphe for Google Photos",
-                MORPHE_VERSION + " • Open source enhancements suite",
+                "Morphe 版 Google 相册",
+                MORPHE_VERSION + " • 开源增强套件",
                 null));
 
         aboutGroup.addView(createItemDivider(activity, density, theme));
@@ -504,14 +504,14 @@ public final class MorpheSettingsScreen {
         aboutGroup.addView(createPreferenceItem(activity, density, theme,
                 "quantum_gm_ic_open_in_new_vd_theme_24",
                 MaterialVectorDrawable.TYPE_SHARE,
-                "GitHub Repository",
-                "View source code, report issues, and download updates",
+                "GitHub 仓库",
+                "查看源码、反馈问题、下载更新",
                 () -> {
                     try {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_URL));
                         activity.startActivity(intent);
                     } catch (Throwable t) {
-                        Toast.makeText(activity, "Unable to open link: " + GITHUB_URL, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "无法打开链接：" + GITHUB_URL, Toast.LENGTH_SHORT).show();
                     }
                 }));
 
@@ -817,17 +817,17 @@ public final class MorpheSettingsScreen {
     }
 
     private static void showResetFlagsDialog(Activity activity, Runnable onBack, Theme theme) {
-        String msg = "All stored phenotype overrides will be cleared.\n\n" +
-                "• Reverts to clean stock Google Photos behavior.\n" +
-                "• You can reload recommended presets anytime.\n" +
-                "• Requires restarting Google Photos to take effect.";
+        String msg = "将清除所有已保存的 phenotype 覆盖项。\n\n" +
+                "• 恢复为原版 Google 相册的默认行为。\n" +
+                "• 随时可以重新加载推荐预设。\n" +
+                "• 需重启 Google 相册后才会生效。";
         PhenotypeFlagManager.createM3MessageDialog(
                 activity,
-                "Reset Flag Overrides?",
+                "重置开关覆盖？",
                 msg,
-                "Reset",
+                "重置",
                 () -> PhenotypeFlagManager.resetAllFlags(activity, () -> {
-                    Toast.makeText(activity, "Flag overrides reset! Force close Photos to apply.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "开关覆盖已重置！请强行关闭相册再重新打开。", Toast.LENGTH_LONG).show();
                     if (onBack != null) {
                         onBack.run();
                     }
@@ -837,34 +837,34 @@ public final class MorpheSettingsScreen {
     }
 
     private static void showClearMfyDialog(Activity activity, Theme theme) {
-        String msg = "This resets the saved status of Made-For-You creation cards in the Create tab.\n\n" +
-                "• Your saved media in storage is NEVER deleted.\n" +
-                "• Saved creation cards will be restored to the carousel with 'Save' buttons active.";
+        String msg = "此操作会重置「创建」页中「为你生成」卡片的已保存状态。\n\n" +
+                "• 已保存到本地的媒体文件绝不会被删除。\n" +
+                "• 已保存的创作卡片会回到卡片列表，并重新出现「保存」按钮。";
         PhenotypeFlagManager.createM3MessageDialog(
                 activity,
-                "Reset MFY Save Status?",
+                "重置「为你生成」保存状态？",
                 msg,
-                "Reset MFY Status",
+                "重置保存状态",
                 () -> {
                     LocalCreationDownloader.clearMfySavedRegistry(activity);
-                    Toast.makeText(activity, "Morphe: MFY creations save status reset", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Morphe：「为你生成」保存状态已重置", Toast.LENGTH_SHORT).show();
                 },
                 true
         ).show();
     }
 
     private static void showClearStoryDialog(Activity activity, Theme theme) {
-        String msg = "This resets the saved status of Story and Memory highlight creations.\n\n" +
-                "• Your saved media in storage is NEVER deleted.\n" +
-                "• Story creations will show 'Save' buttons again and can be re-saved.";
+        String msg = "此操作会重置故事与回忆精选创作的已保存状态。\n\n" +
+                "• 已保存到本地的媒体文件绝不会被删除。\n" +
+                "• 故事创作会重新出现「保存」按钮，可以再次保存。";
         PhenotypeFlagManager.createM3MessageDialog(
                 activity,
-                "Reset Story Save Status?",
+                "重置故事保存状态？",
                 msg,
-                "Reset Story Status",
+                "重置故事状态",
                 () -> {
                     LocalCreationDownloader.clearStorySavedRegistry(activity);
-                    Toast.makeText(activity, "Morphe: Story creations save status reset", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Morphe：故事创作保存状态已重置", Toast.LENGTH_SHORT).show();
                 },
                 true
         ).show();
@@ -881,7 +881,7 @@ public final class MorpheSettingsScreen {
         layout.setPadding(padH, (int) (4 * density), padH, (int) (12 * density));
 
         TextView tvDesc = new TextView(activity);
-        tvDesc.setText("Select the backup profile to spoof for Google Photos unlimited cloud storage:");
+        tvDesc.setText("选择用于伪装 Google 相册无限云存储的备份配置档：");
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(theme.textSecondary);
         tvDesc.setLineSpacing(0, 1.2f);
@@ -896,29 +896,29 @@ public final class MorpheSettingsScreen {
 
         View cardAuto = createProfileOptionCard(
                 activity, density, theme,
-                "Auto-Sync Mode (Recommended)",
-                "Dynamic: Original Quality → Pixel XL, Storage Saver → Pixel 5",
+                "自动同步模式（推荐）",
+                "动态切换：原画质 → Pixel XL，存储空间节省模式 → Pixel 5",
                 DeviceSpoofHelper.PROFILE_AUTO.equals(selected[0])
         );
 
         View cardXl = createProfileOptionCard(
                 activity, density, theme,
                 "Google Pixel XL",
-                "Forced unmetered Original Quality • Quality selector hidden in Photos",
+                "强制不计流量的原画质 • 相册内的画质选项会被隐藏",
                 DeviceSpoofHelper.PROFILE_PIXEL_XL.equals(selected[0])
         );
 
         View cardP5 = createProfileOptionCard(
                 activity, density, theme,
                 "Google Pixel 5",
-                "Forced unmetered Storage Saver • Original Quality & Express locked out",
+                "强制不计流量的存储空间节省模式 • 原画质与极速备份被锁定",
                 DeviceSpoofHelper.PROFILE_PIXEL_5.equals(selected[0])
         );
 
         View cardOriginal = createProfileOptionCard(
                 activity, density, theme,
-                "Original Device (Disabled)",
-                "Spoofing disabled • Real device identity, Video Boost eligible, all backup qualities active",
+                "原设备（已关闭伪装）",
+                "关闭伪装 • 使用真实设备身份，可使用 Video Boost，所有备份画质可选",
                 DeviceSpoofHelper.PROFILE_ORIGINAL.equals(selected[0])
         );
 
@@ -956,7 +956,7 @@ public final class MorpheSettingsScreen {
         layout.addView(optionsContainer);
 
         TextView tvNotice = new TextView(activity);
-        tvNotice.setText("Notice: Changing profiles requires restarting Google Photos to apply new device parameters and entitlements.");
+        tvNotice.setText("注意：切换配置档需要重启 Google 相册，新的设备参数与权益才会生效。");
         tvNotice.setTextSize(11.5f);
         tvNotice.setTextColor(theme.primary);
         tvNotice.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
@@ -964,13 +964,13 @@ public final class MorpheSettingsScreen {
 
         PhenotypeFlagManager.createM3ActionDialog(
                 activity,
-                "Backup Storage Profile",
+                "备份存储配置档",
                 layout,
-                "Apply & Restart",
+                "应用并重启",
                 () -> {
                     if (!selected[0].equals(current)) {
                         DeviceSpoofHelper.setProfile(activity, selected[0]);
-                        Toast.makeText(activity, "Profile updated! Restarting Photos...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "配置档已更新，正在重启相册…", Toast.LENGTH_SHORT).show();
                         DeviceSpoofHelper.restartApp(activity);
                     }
                 }
@@ -988,7 +988,7 @@ public final class MorpheSettingsScreen {
         layout.setPadding(padH, (int) (4 * density), padH, (int) (12 * density));
 
         TextView tvDesc = new TextView(activity);
-        tvDesc.setText("Choose how navigation tabs are displayed in the bottom floating menu bar:");
+        tvDesc.setText("选择底部悬浮菜单栏中导航标签的显示方式：");
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(theme.textSecondary);
         tvDesc.setLineSpacing(0, 1.2f);
@@ -1003,22 +1003,22 @@ public final class MorpheSettingsScreen {
 
         View cardStock = createProfileOptionCard(
                 activity, density, theme,
-                "Stock (Expanded)",
-                "Classic Google Photos layout with text labels on all navigation tabs",
+                "原版（展开）",
+                "经典 Google 相册布局，所有导航标签都带文字",
                 FloatingTabBarHelper.MODE_STOCK.equalsIgnoreCase(selected[0])
         );
 
         View cardCompact = createProfileOptionCard(
                 activity, density, theme,
-                "Compact (Modern UI) [Recommended]",
-                "Active tab shows icon and label, unselected tabs collapse into compact icons",
+                "紧凑（现代界面）【推荐】",
+                "当前标签显示图标与文字，未选中的标签收起为小图标",
                 FloatingTabBarHelper.MODE_COMPACT.equalsIgnoreCase(selected[0])
         );
 
         View cardIconOnly = createProfileOptionCard(
                 activity, density, theme,
-                "Minimal (Icon Only)",
-                "Streamlined layout where all navigation tabs show icons only without labels",
+                "极简（仅图标）",
+                "精简布局，所有导航标签只显示图标、不带文字",
                 FloatingTabBarHelper.MODE_ICON_ONLY.equalsIgnoreCase(selected[0])
         );
 
@@ -1049,7 +1049,7 @@ public final class MorpheSettingsScreen {
         layout.addView(optionsContainer);
 
         TextView tvNotice = new TextView(activity);
-        tvNotice.setText("Note: The compact bar is also automatically triggered by Google Photos whenever system font or display size increases.");
+        tvNotice.setText("说明：当系统字体或显示大小调大时，Google 相册也会自动切换到紧凑样式。");
         tvNotice.setTextSize(11.5f);
         tvNotice.setTextColor(theme.primary);
         tvNotice.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
@@ -1057,12 +1057,12 @@ public final class MorpheSettingsScreen {
 
         PhenotypeFlagManager.createM3ActionDialog(
                 activity,
-                "Floating Menu Bar Style",
+                "悬浮菜单栏样式",
                 layout,
-                "Apply",
+                "应用",
                 () -> {
                     FloatingTabBarHelper.setBarMode(activity, selected[0]);
-                    Toast.makeText(activity, "Menu bar style updated: " + FloatingTabBarHelper.getModeChipName(activity), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "菜单栏样式已更新：" + FloatingTabBarHelper.getModeChipName(activity), Toast.LENGTH_SHORT).show();
                     if (onBack != null) onBack.run();
                 }
         ).show();

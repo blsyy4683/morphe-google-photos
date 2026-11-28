@@ -1,0 +1,102 @@
+name: Zh-CN Sync and Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync upstream, replay translation, build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 把词典/脚本/工作流文件临时搬到工作区之外，之后 reset --hard 才不会丢
+      - name: Keep i18n assets
+        run: |
+          mkdir -p /tmp/assets /tmp/wf
+          cp -r scripts/zh-cn/. /tmp/assets/ || true
+          rm -f /tmp/assets/workflow.yml /tmp/assets/workflow-dev.yml
+          cp .github/workflows/zh-cn-sync.yml /tmp/wf/main.yml
+          if [ -f README.md ]; then cp README.md /tmp/wf/README.md; fi
+          if [ -f .github/workflows/zh-cn-sync-dev.yml ]; then
+            cp .github/workflows/zh-cn-sync-dev.yml /tmp/wf/dev.yml
+          fi
+
+      - name: Read upstream version
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/zh-cn/decide.py stable
+
+      - name: Sync with upstream
+        run: |
+          git remote add upstream https://github.com/Akash-Sriram/morphe-google-photos.git || true
+          git fetch --depth=1 upstream main
+          git reset --hard FETCH_HEAD
+          mkdir -p scripts/zh-cn .github/workflows
+          cp -r /tmp/assets/. scripts/zh-cn/
+          rm -f scripts/zh-cn/workflow.yml scripts/zh-cn/workflow-dev.yml
+          cp /tmp/wf/main.yml .github/workflows/zh-cn-sync.yml
+          if [ -f /tmp/wf/dev.yml ]; then
+            cp /tmp/wf/dev.yml .github/workflows/zh-cn-sync-dev.yml
+          fi
+          if [ -f /tmp/wf/README.md ]; then cp /tmp/wf/README.md README.md; fi
+
+      - name: Replay translation
+        run: python3 scripts/zh-cn/apply.py .
+
+      - name: Commit translations
+        run: |
+          git config user.name "zh-cn-bot"
+          git config user.email "zh-cn-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "no change"; else
+            git commit -m "chore(zh-CN): 同步上游并重放中文翻译"
+            git push --force origin HEAD:main
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: burrunan/gradle-cache-action@v3
+
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for i in 1 2 3; do
+            ./gradlew :patches:buildAndroid -Pgpr.user=${{ github.actor }} -Pgpr.key=${{ secrets.GITHUB_TOKEN }} && exit 0
+            echo "第 $i 次构建失败，30 秒后重试（多为依赖仓库限流）"
+            sleep 30
+          done
+          exit 1
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          V=$(grep -m1 '^version' gradle.properties | sed 's/^version[[:space:]]*=[[:space:]]*//' | tr -d '\r')
+          MPP="patches/build/libs/patches-${V}.mpp"
+          if [ ! -f "$MPP" ]; then
+            MPP=$(ls -t patches/build/libs/patches-*.mpp | grep -v -e '-sources' -e '-javadoc' | head -1)
+          fi
+          echo "bundle: $MPP"
+          cp "$MPP" /tmp/patches-zhcn.mpp
+          gh release delete zh-cn-latest --yes --cleanup-tag || true
+          git push --force origin HEAD:main
+          gh release create zh-cn-latest /tmp/patches-zhcn.mpp \
+            --title "中文版补丁包 ${V}（稳定版）" \
+            --notes "补丁包版本：${V}
+          对应上游版本：${{ steps.check.outputs.upstream_ref }}
+          构建时间：$(date -u +%Y-%m-%d\ %H:%M\ UTC)
+          界面已汉化；上游新增的文案若尚未收录词条会保持英文。
+          安装：下载本页 .mpp，用 Morph Manager 的补丁源 - 本地文件导入。"

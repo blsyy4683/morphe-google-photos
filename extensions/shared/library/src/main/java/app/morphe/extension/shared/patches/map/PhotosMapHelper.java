@@ -210,7 +210,7 @@ public class PhotosMapHelper {
                             "MicroG Location Permission",
                             "MicroG requires Location permission to display photo location maps and extra info.\n\nWithout this permission, location maps in Google Photos are temporarily disabled to prevent crashes.",
                             null,
-                            "Open Settings",
+                            "打开设置",
                             () -> {
                                 try {
                                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -477,7 +477,7 @@ public class PhotosMapHelper {
                     final Activity finalAct = activity;
                     new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
                         try {
-                            android.widget.Toast.makeText(finalAct, "Location permission required for map", android.widget.Toast.LENGTH_SHORT).show();
+                            android.widget.Toast.makeText(finalAct, "地图需要位置权限", android.widget.Toast.LENGTH_SHORT).show();
                             if (Build.VERSION.SDK_INT >= 23) {
                                 finalAct.requestPermissions(new String[]{
                                     android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -534,7 +534,7 @@ public class PhotosMapHelper {
                 SafeLog.w("MorpheLocation", "Location providers are disabled on device");
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
                     try {
-                        android.widget.Toast.makeText(finalContext, "Please enable Location in device settings", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(finalContext, "请在系统设置中开启定位", android.widget.Toast.LENGTH_SHORT).show();
                     } catch (Throwable ignored) {}
                 });
                 return;

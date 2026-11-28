@@ -500,7 +500,7 @@ public final class PhotosTimelineFilter {
         root.setPadding(padH, (int) (4 * density), padH, (int) (8 * density));
 
         TextView tvDesc = new TextView(activity);
-        tvDesc.setText("Select device folders to display directly on your main Photos timeline. Uncheck Camera to hide your camera roll from the home feed without deleting photos:");
+        tvDesc.setText("选择要直接显示在照片主时间线中的设备文件夹。取消勾选「相机」即可从首页隐藏相机胶卷，照片不会被删除：");
         tvDesc.setTextSize(12.5f);
         tvDesc.setTextColor(theme.textSecondary);
         tvDesc.setLineSpacing(0, 1.15f);
@@ -548,9 +548,9 @@ public final class PhotosTimelineFilter {
             TextView tvSub = new TextView(activity);
             String sub = folder.relativePath;
             if (folder.isCamera) {
-                sub += " • Primary camera roll";
+                sub += " • 主相机胶卷";
             } else if (folder.itemCount > 0) {
-                sub += " • " + folder.itemCount + (folder.itemCount == 1 ? " item" : " items");
+                sub += " • " + folder.itemCount + (folder.itemCount == 1 ? " 项" : " 项");
             }
             tvSub.setText(sub);
             tvSub.setTextSize(12f);
@@ -571,12 +571,12 @@ public final class PhotosTimelineFilter {
 
         PhenotypeFlagManager.createM3ActionDialog(
                 activity,
-                "Customize Timeline Folders",
+                "自定义时间线文件夹",
                 root,
-                "Apply & Save",
+                "应用并保存",
                 () -> {
                     setSelectedCustomBucketIds(activity, workingSet);
-                    Toast.makeText(activity, "Timeline folders updated! Pull down on Photos tab to refresh.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "时间线文件夹已更新！在「照片」页下拉刷新即可生效。", Toast.LENGTH_SHORT).show();
                 }
         ).show();
     }

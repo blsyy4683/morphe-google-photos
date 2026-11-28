@@ -13,9 +13,9 @@ import android.widget.Toast;
 public final class AllFilesPermission {
     private AllFilesPermission() {}
     public static void request(Activity activity, Runnable confirmedAction) {
-        new AlertDialog.Builder(activity).setTitle("Move local media to Locked Folder")
-            .setMessage("This move needs access to files in shared storage. Android's All files access also permits access to documents there. You can revoke it afterwards in Settings. Return here to continue this move once.")
-            .setNegativeButton("Cancel", null).setPositiveButton("Open Settings", (dialog, button) -> {
+        new AlertDialog.Builder(activity).setTitle("把本机媒体移入「已锁定文件夹」")
+            .setMessage("这次移动需要访问共享存储中的文件。Android 的「所有文件访问」权限也会一并允许访问其中的文档。事后可以在系统设置里撤销。授予后回到这里即可继续这次移动。")
+            .setNegativeButton("取消", null).setPositiveButton("打开设置", (dialog, button) -> {
                 Application.ActivityLifecycleCallbacks callback = new Application.ActivityLifecycleCallbacks() {
                     boolean paused;
                     public void onActivityPaused(Activity a) { if (a == activity) paused = true; }
@@ -23,7 +23,7 @@ public final class AllFilesPermission {
                         if (a != activity || !paused) return;
                         activity.getApplication().unregisterActivityLifecycleCallbacks(this);
                         if (Environment.isExternalStorageManager()) confirmedAction.run();
-                        else Toast.makeText(activity, "Move cancelled: file access was not granted", Toast.LENGTH_LONG).show();
+                        else Toast.makeText(activity, "已取消移动：没有获得文件访问权限", Toast.LENGTH_LONG).show();
                     }
                     public void onActivityDestroyed(Activity a) { if (a == activity) activity.getApplication().unregisterActivityLifecycleCallbacks(this); }
                     public void onActivityCreated(Activity a, Bundle b) {}
@@ -35,7 +35,7 @@ public final class AllFilesPermission {
                 try { activity.startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + activity.getPackageName()))); }
                 catch (Exception e) {
                     activity.getApplication().unregisterActivityLifecycleCallbacks(callback);
-                    Toast.makeText(activity, "File access settings unavailable", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "无法打开文件访问设置", Toast.LENGTH_LONG).show();
                 }
             }).show();
     }

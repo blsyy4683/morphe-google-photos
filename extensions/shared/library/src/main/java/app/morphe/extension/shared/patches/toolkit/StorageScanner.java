@@ -62,10 +62,10 @@ public class StorageScanner {
         LIBRARY("Library"),
         SEARCH("Search"),
         ALBUMS("Albums"),
-        SHARED("Shared"),
-        FAVORITES("Favorites"),
-        TRASH("Trash"),
-        LOCKED("Locked Folder");
+        SHARED("共享"),
+        FAVORITES("收藏"),
+        TRASH("回收站"),
+        LOCKED("已锁定文件夹");
 
         public final String displayName;
         SourceType(String displayName) {
@@ -79,9 +79,9 @@ public class StorageScanner {
     }
 
     public enum SpaceFilter {
-        ANY("Any"),
-        CONSUMING("Consuming"),
-        NON_CONSUMING("Non-Consuming");
+        ANY("不限"),
+        CONSUMING("占用配额"),
+        NON_CONSUMING("不占配额");
 
         public final String label;
         SpaceFilter(String label) {
@@ -254,7 +254,7 @@ public class StorageScanner {
                          String mimeType, double latitude, double longitude, String caption) {
             this.dedupKey = dedupKey;
             this.mediaKey = mediaKey;
-            this.filename = filename != null ? filename : "Unknown";
+            this.filename = filename != null ? filename : "未知";
             this.sizeBytes = sizeBytes;
             this.quotaBytes = quotaBytes;
             this.captureTimestamp = captureTimestamp;
@@ -3523,7 +3523,7 @@ public class StorageScanner {
 
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Encrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, items.size()) + " of " + items.size() + ")...");
+                cb.accept("Encrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, items.size()) + " 页，共 " + items.size() + ")...");
             }
 
             try {
@@ -3615,7 +3615,7 @@ public class StorageScanner {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (activity.isFinishing() || activity.isDestroyed()) return;
-            Toast.makeText(activity, "Unlocking " + itemsToUnlock.size() + " item(s) from Locked Folder...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "正在解锁 " + itemsToUnlock.size() + " 项从「已锁定文件夹」移出…", Toast.LENGTH_SHORT).show();
 
             new Thread(() -> {
                 boolean ok = false;
@@ -3626,7 +3626,7 @@ public class StorageScanner {
                 }
                 final boolean finalOk = ok;
                 activity.runOnUiThread(() -> {
-                    Toast.makeText(activity, finalOk ? "Successfully unlocked " + itemsToUnlock.size() + " item(s)!" : "Failed to unlock items.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, finalOk ? "已成功解锁 " + itemsToUnlock.size() + " 项！" : "解锁失败。", Toast.LENGTH_SHORT).show();
                     triggerOnlineSync(activity, accountId);
                     notifyUiChanges(activity, accountId);
                     if (onDoneCallback != null) onDoneCallback.run();
@@ -3719,7 +3719,7 @@ public class StorageScanner {
 
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Decrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, totalItems) + " of " + totalItems + ")...");
+                cb.accept("Decrypting & moving items (" + (i + 1) + "–" + Math.min(i + chunkSize, totalItems) + " 页，共 " + totalItems + ")...");
             }
 
             try {
@@ -4637,7 +4637,7 @@ public class StorageScanner {
         if (updatedCount == 0 && skippedCount > 0) {
             return new ActionResult(false, 0, "No parseable timestamps found in filenames (" + skippedCount + " skipped)");
         }
-        return new ActionResult(true, updatedCount, "Successfully updated dates for " + updatedCount + " items" + (skippedCount > 0 ? " (" + skippedCount + " skipped)" : ""));
+        return new ActionResult(true, updatedCount, "Successfully updated dates for " + updatedCount + " 项" + (skippedCount > 0 ? " (" + skippedCount + " skipped)" : ""));
     }
 
     private static void triggerOnlineSync(Context context, int accountId) {
@@ -4740,7 +4740,7 @@ public class StorageScanner {
 
         // Native Cloud Album handling (runs via Google Photos TaskRunner and syncs to cloud)
         if ("toNewAlbum".equals(actionId)) {
-            String newAlbumName = param != null && !param.trim().isEmpty() ? param.trim() : "New Album";
+            String newAlbumName = param != null && !param.trim().isEmpty() ? param.trim() : "新建相册";
             List<String> mediaKeys = resolveRemoteMediaKeys(account, items);
             int[] outAdded = new int[1];
             String cloudAlbumKey = createNativeCloudAlbum(context, account.accountId, newAlbumName, mediaKeys, outAdded);
@@ -4751,7 +4751,7 @@ public class StorageScanner {
             if (mediaKeys.isEmpty() && items != null && !items.isEmpty()) {
                 return new ActionResult(true, count, "Created album '" + newAlbumName + "'. Note: Selected local item(s) must be backed up to cloud before adding to album.");
             }
-            return new ActionResult(true, count, "Successfully created album '" + newAlbumName + "' with " + count + " items");
+            return new ActionResult(true, count, "Successfully created album '" + newAlbumName + "' with " + count + " 项");
         }
 
         if ("toExistingAlbum".equals(actionId)) {
@@ -4800,7 +4800,7 @@ public class StorageScanner {
         if ("unLock".equals(actionId)) {
             java.util.function.Consumer<String> cb = sActionProgressCallback;
             if (cb != null) {
-                cb.accept("Unlocking " + ((items != null) ? items.size() : 0) + " items from Locked Folder...");
+                cb.accept("正在解锁 " + ((items != null) ? items.size() : 0) + " items from Locked Folder...");
             }
             boolean ok = executeOnlineMarsRemoveTask(context, account.accountId, items);
             Logger.printInfo(() -> "executeOnlineMarsRemoveTask result: " + ok);
@@ -5083,7 +5083,7 @@ public class StorageScanner {
                     triggerOnlineSync(context, account.accountId);
                     notifyUiChanges(context, account.accountId);
 
-                    return new ActionResult(true, count, "Successfully archived " + count + " items");
+                    return new ActionResult(true, count, "Successfully archived " + count + " 项");
 
                 case "unArchive":
                     boolean hasRemoteUnarchiveOrigin = hasColumn(db, "remote_media", "last_archive_origin");
@@ -5195,7 +5195,7 @@ public class StorageScanner {
                     triggerOnlineSync(context, account.accountId);
                     notifyUiChanges(context, account.accountId);
 
-                    return new ActionResult(true, count, "Successfully un-archived " + count + " items");
+                    return new ActionResult(true, count, "Successfully un-archived " + count + " 项");
 
                 case "toFavorite":
                     boolean hasRemoteFavMediaKey = hasColumn(db, "remote_media", "media_key");
@@ -5312,7 +5312,7 @@ public class StorageScanner {
             if (db != null && db.inTransaction()) {
                 try { db.endTransaction(); } catch (Throwable ignored) {}
             }
-            return new ActionResult(false, 0, "Error: " + t.getMessage());
+            return new ActionResult(false, 0, "错误：" + t.getMessage());
         } finally {
             if (db != null) {
                 try { db.close(); } catch (Throwable ignored) {}
